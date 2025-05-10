@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Button = ({ type = 'button', variant = 'primary', size = 'medium', onClick, children, className = '', ...props }) => {
   const baseClasses = 'font-medium rounded focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors';
   const variantClasses = {
@@ -18,3 +20,5 @@ const Button = ({ type = 'button', variant = 'primary', size = 'medium', onClick
     </button>
   );
 };
+
+export default Button;
