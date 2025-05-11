@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import Input from '../components/common/Input';
-import Button from '../components/common/Button';
+import { AuthContext } from '../../context/AuthContext';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
 // Dummy users for authentication
 const dummyUsers = [
   { email: 'student@guc.edu.eg', password: 'student123', role: 'student' },

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Input from '../components/common/Input';
-import Button from '../components/common/Button';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
 // Company size options
 const companySizes = [
   { value: 'small', label: 'Small (50 employees or less)' },
