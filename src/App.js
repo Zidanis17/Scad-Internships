@@ -22,6 +22,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/logout" element={<Login />} />
           <Route path="/register-company" element={<CompanyRegistration />} />
           <Route path="/company/dashboard" element={<CompanyDashboard />} />
           <Route path="/company/internship-posts" element={<InternshipPosts />} />
@@ -31,6 +32,7 @@ function App() {
           <Route path="/student/profile" element={<StudentProfile />} />
           <Route path="/student/internships" element={<StudentInternship />} />
           <Route path="/student/applications" element={<StudentApplications />} />
+          
 
         </Routes>
       </Router>
