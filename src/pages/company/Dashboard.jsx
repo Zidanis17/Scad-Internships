@@ -1,37 +1,456 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Button from '../../components/common/Button';
 
-const CompanyDashboard = () => {
+// Dummy data for the company dashboard
+const dummyCompanyData = {
+  name: 'Tech Solutions Inc.',
+  id: 'COMP-5678',
+  industry: 'Information Technology',
+  size: 'Medium',
+  logo: '/companies/tech-solutions.png',
+  status: 'Approved',
+  joinDate: '2025-01-15',
+  notifications: [
+    {
+      id: 1,
+      type: 'application',
+      title: 'New Application Received',
+      message: 'Ahmed Hassan has applied for "Software Engineering Intern" position.',
+      date: '2025-05-10',
+      read: false
+    },
+    {
+      id: 2,
+      type: 'intern',
+      title: 'Intern Completion',
+      message: 'Mariam Ali has completed her internship. Please submit an evaluation.',
+      date: '2025-05-08',
+      read: false
+    },
+    {
+      id: 3,
+      type: 'cycle',
+      title: 'New Internship Cycle',
+      message: 'Summer 2025 internship cycle has begun! Post your internship opportunities now.',
+      date: '2025-05-01',
+      read: true
+    }
+  ]
+};
+
+const dummyInternshipPosts = [
+  {
+    id: 1,
+    title: 'Software Engineering Intern',
+    duration: '3 months',
+    isPaid: true,
+    salary: '8000 EGP/month',
+    applicationsCount: 12,
+    status: 'Active',
+    deadline: '2025-06-15',
+    postedAt: '2025-05-07'
+  },
+  {
+    id: 2,
+    title: 'UI/UX Design Intern',
+    duration: '4 months',
+    isPaid: true,
+    salary: '7500 EGP/month',
+    applicationsCount: 8,
+    status: 'Active',
+    deadline: '2025-06-20',
+    postedAt: '2025-05-05'
+  },
+  {
+    id: 3,
+    title: 'Data Analysis Intern',
+    duration: '2 months',
+    isPaid: false,
+    applicationsCount: 5,
+    status: 'Active',
+    deadline: '2025-06-10',
+    postedAt: '2025-05-03'
+  }
+];
+
+const dummyCurrentInterns = [
+  {
+    id: 1,
+    name: 'Omar Ibrahim',
+    major: 'Computer Science',
+    position: 'Software Engineering Intern',
+    startDate: '2025-04-01',
+    endDate: '2025-07-01',
+    progress: 50,
+    evaluated: false
+  },
+  {
+    id: 2,
+    name: 'Nour Ahmed',
+    major: 'Business Informatics',
+    position: 'Data Analysis Intern',
+    startDate: '2025-03-15',
+    endDate: '2025-06-15',
+    progress: 75,
+    evaluated: false
+  }
+];
+
+const dummyRecentApplications = [
+  {
+    id: 1,
+    studentName: 'Ahmed Hassan',
+    major: 'Computer Science',
+    position: 'Software Engineering Intern',
+    appliedDate: '2025-05-10',
+    status: 'Pending'
+  },
+  {
+    id: 2,
+    studentName: 'Sara Mohamed',
+    major: 'Business Informatics',
+    position: 'UI/UX Design Intern',
+    appliedDate: '2025-05-09',
+    status: 'Finalized'
+  },
+  {
+    id: 3,
+    studentName: 'Yousef Ali',
+    major: 'Computer Engineering',
+    position: 'Software Engineering Intern',
+    appliedDate: '2025-05-08',
+    status: 'Finalized'
+  }
+];
+
+const Dashboard = () => {
+  const [company, setCompany] = useState(null);
+  const [internshipPosts, setInternshipPosts] = useState([]);
+  const [currentInterns, setCurrentInterns] = useState([]);
+  const [recentApplications, setRecentApplications] = useState([]);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  useEffect(() => {
+    // Simulate API calls with dummy data
+    setCompany(dummyCompanyData);
+    setInternshipPosts(dummyInternshipPosts);
+    setCurrentInterns(dummyCurrentInterns);
+    setRecentApplications(dummyRecentApplications);
+    setUnreadNotifications(dummyCompanyData.notifications.filter(n => !n.read).length);
+  }, []);
+
+  if (!company) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  const markAllAsRead = () => {
+    const updatedNotifications = company.notifications.map(notification => ({
+      ...notification,
+      read: true
+    }));
+    setCompany({
+      ...company,
+      notifications: updatedNotifications
+    });
+    setUnreadNotifications(0);
+  };
+
+  // Calculate total applications across all internship posts
+  const totalApplications = internshipPosts.reduce((total, post) => total + post.applicationsCount, 0);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-4xl space-y-8 p-8 bg-white shadow-md rounded-lg">
-        <h1 className="text-3xl font-bold text-gray-900 text-center">Company Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link
-            to="/company/internship-posts"
-            className="p-6 bg-blue-100 rounded-lg text-center text-blue-700 hover:bg-blue-200 transition"
-          >
-            <h2 className="text-lg font-semibold">Manage Internship Posts</h2>
-            <p className="mt-2 text-sm text-gray-600">Create, edit, or delete internship listings.</p>
-          </Link>
-          <Link
-            to="/company/applications"
-            className="p-6 bg-green-100 rounded-lg text-center text-green-700 hover:bg-green-200 transition"
-          >
-            <h2 className="text-lg font-semibold">View Applications</h2>
-            <p className="mt-2 text-sm text-gray-600">Review student applications to your posts.</p>
-          </Link>
-          <Link
-            to="/company/interns"
-            className="p-6 bg-yellow-100 rounded-lg text-center text-yellow-700 hover:bg-yellow-200 transition"
-          >
-            <h2 className="text-lg font-semibold">Manage Interns</h2>
-            <p className="mt-2 text-sm text-gray-600">Track current and past interns.</p>
-          </Link>
+    <div className="bg-gray-50 min-h-screen pb-8">
+      {/* Header */}
+      <div className="bg-indigo-700 text-white p-6">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold">Welcome, {company.name}</h1>
+          <p className="mt-2">Company ID: {company.id} | {company.industry} | {company.size} Company</p>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white rounded-lg shadow-md p-6 flex flex-col">
+              <h3 className="text-gray-500 text-sm font-medium mb-1">Active Internship Posts</h3>
+              <p className="text-3xl font-bold text-gray-800">{internshipPosts.length}</p>
+              <Link to="/company/internship-posts" className="mt-4 text-sm text-indigo-600 hover:text-indigo-800">
+                Manage Posts
+              </Link>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-md p-6 flex flex-col">
+              <h3 className="text-gray-500 text-sm font-medium mb-1">Total Applications</h3>
+              <p className="text-3xl font-bold text-gray-800">{totalApplications}</p>
+              <Link to="/company/applications" className="mt-4 text-sm text-indigo-600 hover:text-indigo-800">
+                Review Applications
+              </Link>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-md p-6 flex flex-col">
+              <h3 className="text-gray-500 text-sm font-medium mb-1">Current Interns</h3>
+              <p className="text-3xl font-bold text-gray-800">{currentInterns.length}</p>
+              <Link to="/company/interns" className="mt-4 text-sm text-indigo-600 hover:text-indigo-800">
+                Manage Interns
+              </Link>
+            </div>
+          </div>
+
+          {/* Internship Posts */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Your Internship Posts</h2>
+              <Link to="/company/internship-posts" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                View All
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {internshipPosts.map((post) => (
+                <div key={post.id} className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                  <div className="flex justify-between">
+                    <h3 className="font-medium text-gray-900">{post.title}</h3>
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      post.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {post.status}
+                    </span>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-600">
+                    <p>Posted on: {post.postedAt} | Deadline: {post.deadline}</p>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                      {post.duration}
+                    </span>
+                    {post.isPaid ? (
+                      <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
+                        Paid: {post.salary}
+                      </span>
+                    ) : (
+                      <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                        Unpaid
+                      </span>
+                    )}
+                    <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
+                      {post.applicationsCount} Applications
+                    </span>
+                  </div>
+                  <div className="mt-3 flex space-x-2">
+                    <Link to={`/company/internship-posts/${post.id}`}>
+                      <Button className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm py-1">
+                        View Details
+                      </Button>
+                    </Link>
+                    <Link to={`/company/applications?post=${post.id}`}>
+                      <Button className="bg-white text-indigo-600 border border-indigo-600 hover:bg-indigo-50 text-sm py-1">
+                        View Applications
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6">
+              <Link to="/company/internship-posts/new">
+                <Button className="bg-indigo-600 text-white hover:bg-indigo-700 w-full">
+                  Create New Internship Post
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Current Interns */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Current Interns</h2>
+              <Link to="/company/interns" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                View All
+              </Link>
+            </div>
+            {currentInterns.length > 0 ? (
+              <div className="space-y-4">
+                {currentInterns.map((intern) => (
+                  <div key={intern.id} className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                    <div className="flex justify-between">
+                      <h3 className="font-medium text-gray-900">{intern.name}</h3>
+                      {intern.evaluated ? (
+                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                          Evaluated
+                        </span>
+                      ) : (
+                        <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
+                          Pending Evaluation
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600">{intern.position} | {intern.major}</p>
+                    <div className="mt-2">
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm text-gray-600">Internship Progress</span>
+                        <span className="text-sm text-gray-600">{intern.progress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-indigo-600 h-2 rounded-full"
+                          style={{ width: `${intern.progress}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {intern.startDate} to {intern.endDate}
+                      </p>
+                    </div>
+                    <div className="mt-3">
+                      <Link to={`/company/interns/${intern.id}`}>
+                        <Button className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm py-1">
+                          View Details
+                        </Button>
+                      </Link>
+                      {!intern.evaluated && (
+                        <Link to={`/company/interns/${intern.id}/evaluate`} className="ml-2">
+                          <Button className="bg-white text-indigo-600 border border-indigo-600 hover:bg-indigo-50 text-sm py-1">
+                            Evaluate
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-4">No current interns</p>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-8">
+          {/* Notifications */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Notifications
+                {unreadNotifications > 0 && (
+                  <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                    {unreadNotifications}
+                  </span>
+                )}
+              </h2>
+              {unreadNotifications > 0 && (
+                <button 
+                  onClick={markAllAsRead}
+                  className="text-sm text-indigo-600 hover:text-indigo-800"
+                >
+                  Mark all as read
+                </button>
+              )}
+            </div>
+            <div className="space-y-4">
+              {company.notifications.length > 0 ? (
+                company.notifications.map((notification) => (
+                  <div 
+                    key={notification.id} 
+                    className={`p-3 rounded-md ${notification.read ? 'bg-gray-50' : 'bg-indigo-50'}`}
+                  >
+                    <div className="flex justify-between">
+                      <h3 className="font-medium text-gray-900">{notification.title}</h3>
+                      <span className="text-xs text-gray-500">{notification.date}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-center py-4">No notifications yet</p>
+              )}
+            </div>
+          </div>
+
+          {/* Recent Applications */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Recent Applications</h2>
+              <Link to="/company/applications" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                View All
+              </Link>
+            </div>
+            {recentApplications.length > 0 ? (
+              <div className="space-y-4">
+                {recentApplications.map((application) => (
+                  <div key={application.id} className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium text-gray-900">{application.studentName}</h3>
+                        <p className="text-sm text-gray-600">{application.major}</p>
+                        <p className="text-sm text-gray-500">Applied for: {application.position}</p>
+                        <p className="text-xs text-gray-500">Applied on: {application.appliedDate}</p>
+                      </div>
+                      <span 
+                        className={`text-xs px-2 py-1 rounded ${
+                          application.status === 'Pending' 
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : application.status === 'Finalized'
+                            ? 'bg-blue-100 text-blue-800'
+                            : application.status === 'Accepted'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {application.status}
+                      </span>
+                    </div>
+                    <div className="mt-3">
+                      <Link to={`/company/applications/${application.id}`}>
+                        <Button className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm py-1">
+                          Review Application
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-4">No recent applications</p>
+            )}
+          </div>
+
+          {/* Quick Links */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Links</h2>
+            <div className="space-y-2">
+              <Link 
+                to="/company/internship-posts/new" 
+                className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
+              >
+                Create New Internship Post
+              </Link>
+              <Link 
+                to="/company/applications" 
+                className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
+              >
+                Review Applications
+              </Link>
+              <Link 
+                to="/company/interns" 
+                className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
+              >
+                Manage Interns
+              </Link>
+              <Link 
+                to="/company/profile" 
+                className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
+              >
+                Company Profile
+              </Link>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
   );
 };
 
-export default CompanyDashboard;
+export default Dashboard;
