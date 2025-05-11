@@ -4,7 +4,7 @@ import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
 import EvaluationForm from '../../components/evaluation/EvaluationForm';
 
-// Dummy data for interns
+// Dummy data for interns with sample evaluation data
 const dummyInterns = [
   {
     id: 1,
@@ -87,6 +87,13 @@ const dummyInterns = [
     supervisor: 'Mohamed Nasser',
     status: 'completed',
     evaluated: true,
+    evaluation: {
+      rating: 4,
+      strengths: 'Excellent mobile development skills',
+      areasForImprovement: 'Could improve documentation habits',
+      comments: 'A reliable and skilled intern',
+      recommended: true
+    },
     contactEmail: 'yousef.mahmoud@student.guc.edu.eg',
     phone: '+20 123-456-7893',
     applications: [
@@ -147,20 +154,17 @@ const Interns = () => {
   };
 
   const handleCompleteInternship = (internId) => {
-    // Update intern status to completed
-    const updatedInterns = interns.map(intern => {
-      if (intern.id === internId) {
-        return { ...intern, status: 'completed', progress: 100 };
-      }
-      return intern;
+    setInterns(prevInterns => {
+      const updatedInterns = prevInterns.map(intern => 
+        intern.id === internId 
+          ? { ...intern, status: 'completed', progress: 100 } 
+          : intern
+      );
+      const completedIntern = updatedInterns.find(intern => intern.id === internId);
+      setSelectedIntern(completedIntern);
+      setShowEvaluationModal(true);
+      return updatedInterns;
     });
-    
-    setInterns(updatedInterns);
-    
-    // Find the updated intern to select for evaluation
-    const completedIntern = updatedInterns.find(intern => intern.id === internId);
-    setSelectedIntern(completedIntern);
-    setShowEvaluationModal(true);
   };
 
   const handleOpenEvaluation = (intern) => {
@@ -184,20 +188,15 @@ const Interns = () => {
   };
 
   const handleSubmitEvaluation = (evaluation) => {
-    // Update intern evaluation status
-    const updatedInterns = interns.map(intern => {
-      if (intern.id === selectedIntern.id) {
-        return { ...intern, evaluated: true };
-      }
-      return intern;
-    });
-    
-    setInterns(updatedInterns);
+    setInterns(prevInterns => 
+      prevInterns.map(intern => 
+        intern.id === selectedIntern.id 
+          ? { ...intern, evaluated: true, evaluation: evaluation } 
+          : intern
+      )
+    );
     setShowEvaluationModal(false);
     setSelectedIntern(null);
-    
-    // In a real app, you'd save the evaluation to the backend here
-    console.log('Evaluation submitted:', evaluation);
   };
 
   const renderInternCard = (intern) => {
@@ -339,7 +338,6 @@ const Interns = () => {
     
     return (
       <div className="space-y-6 max-w-full overflow-y-auto">
-        {/* Header with profile info */}
         <div className="flex flex-col md:flex-row md:items-start md:justify-between pb-6 border-b border-gray-200">
           <div className="mb-4 md:mb-0">
             <h3 className="text-2xl font-bold text-gray-800">{selectedIntern.name}</h3>
@@ -359,7 +357,6 @@ const Interns = () => {
           </div>
         </div>
         
-        {/* Internship details */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <h4 className="text-lg font-medium text-gray-700 mb-3">Internship Details</h4>
@@ -402,7 +399,6 @@ const Interns = () => {
           </div>
         </div>
         
-        {/* Skills */}
         <div>
           <h4 className="text-lg font-medium text-gray-700 mb-3">Skills</h4>
           <div className="flex flex-wrap gap-2">
@@ -417,7 +413,6 @@ const Interns = () => {
           </div>
         </div>
         
-        {/* Application History */}
         <div>
           <h4 className="text-lg font-medium text-gray-700 mb-3">Application History</h4>
           <div className="bg-gray-50 p-4 rounded-lg overflow-x-auto">
@@ -450,7 +445,6 @@ const Interns = () => {
           </div>
         </div>
         
-        {/* Footer with actions */}
         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
           {selectedIntern.status === 'current' && (
             <Button 
@@ -494,7 +488,6 @@ const Interns = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-8">
-      {/* Header */}
       <div className="bg-indigo-700 text-white p-6">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-bold">Manage Interns</h1>
@@ -502,9 +495,7 @@ const Interns = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 mt-8">
-        {/* Search and Filter */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -538,7 +529,6 @@ const Interns = () => {
           </div>
         </div>
 
-        {/* Interns List */}
         {loading ? (
           <div className="text-center py-10">
             <p className="text-gray-500">Loading interns...</p>
@@ -561,7 +551,6 @@ const Interns = () => {
         )}
       </div>
 
-      {/* Evaluation Modal */}
       {showEvaluationModal && selectedIntern && (
         <Modal 
           isOpen={showEvaluationModal} 
@@ -569,15 +558,13 @@ const Interns = () => {
           title={selectedIntern.evaluated ? "Intern Evaluation" : "Evaluate Intern"}
         >
           <EvaluationForm 
-            intern={selectedIntern}
             onSubmit={handleSubmitEvaluation}
-            readOnly={selectedIntern.evaluated}
+            initialData={selectedIntern.evaluation || {}}
             evaluationType='Student'
           />
         </Modal>
       )}
 
-      {/* Details Modal */}
       {showDetailsModal && selectedIntern && (
         <Modal
           isOpen={showDetailsModal}

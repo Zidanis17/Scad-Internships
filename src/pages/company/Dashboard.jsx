@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
+import InternshipForm from '../../components/internship/InternshipForm';
 import EvaluationForm from '../../components/evaluation/EvaluationForm';
 
 // Dummy data for the company dashboard
@@ -156,6 +157,8 @@ const Dashboard = () => {
   const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isPostDetailsModalOpen, setIsPostDetailsModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [formMode, setFormMode] = useState('create');
 
   useEffect(() => {
     // Simulate API calls with dummy data
@@ -226,6 +229,35 @@ const Dashboard = () => {
     setIsEvaluationModalOpen(false);
     setSelectedIntern(null);
     console.log('Evaluation submitted:', evaluation);
+  };
+
+  const handleCreatePost = () => {
+    setFormMode('create');
+    setSelectedPost(null);
+    setIsFormModalOpen(true);
+  };
+
+  const handleSubmitPost = (postData) => {
+    const { jobTitle, skills, ...rest } = postData;
+    const title = jobTitle;
+    const skillsRequired = skills;
+    const durationMonths = parseInt(postData.duration?.split(' ')[0]) || 0;
+    
+    if (formMode === 'create') {
+      const newPost = {
+        id: internshipPosts.length + 1,
+        title,
+        skillsRequired,
+        ...rest,
+        durationMonths,
+        postedAt: new Date().toISOString().split('T')[0],
+        applicationsCount: 0,
+        status: postData.status || 'Active'
+      };
+      setInternshipPosts([...internshipPosts, newPost]);
+    }
+    setIsFormModalOpen(false);
+    setSelectedPost(null);
   };
 
   const renderInternDetails = () => {
@@ -407,11 +439,12 @@ const Dashboard = () => {
               ))}
             </div>
             <div className="mt-6">
-              <Link to="/company/internship-posts/new">
-                <Button className="bg-indigo-600 text-white hover:bg-indigo-700 w-full">
-                  Create New Internship Post
-                </Button>
-              </Link>
+              <Button 
+                className="bg-indigo-600 text-white hover:bg-indigo-700 w-full"
+                onClick={handleCreatePost}
+              >
+                Create New Internship Post
+              </Button>
             </div>
           </div>
 
@@ -578,8 +611,8 @@ const Dashboard = () => {
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Links</h2>
             <div className="space-y-2">
               <Link 
-                to="/company/internship-posts/new" 
-                className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
+                className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium w-full text-left"
+                onClick={handleCreatePost}
               >
                 Create New Internship Post
               </Link>
@@ -703,6 +736,22 @@ const Dashboard = () => {
               </Button>
             </div>
           </div>
+        </Modal>
+      )}
+
+      {/* Create Internship Post Modal */}
+      {isFormModalOpen && (
+        <Modal
+          isOpen={isFormModalOpen}
+          onClose={() => setIsFormModalOpen(false)}
+          title="Create New Internship Post"
+          size="lg"
+        >
+          <InternshipForm
+            initialData={{}}
+            onSubmit={handleSubmitPost}
+            mode="create"
+          />
         </Modal>
       )}
     </div>
