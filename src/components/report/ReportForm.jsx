@@ -5,6 +5,8 @@ import Button from '../common/Button';
 const ReportForm = ({ onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
     title: initialData.title || '',
+    companyName: initialData.companyName || '',
+    jobTitle: initialData.jobTitle || '',
     introduction: initialData.introduction || '',
     body: initialData.body || '',
     helpfulCourses: initialData.helpfulCourses || [],
@@ -51,6 +53,24 @@ const ReportForm = ({ onSubmit, initialData = {} }) => {
         onChange={handleChange} 
         required 
       />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input 
+          label="Company Name" 
+          name="companyName" 
+          value={formData.companyName} 
+          onChange={handleChange} 
+          required 
+        />
+        
+        <Input 
+          label="Job Title" 
+          name="jobTitle" 
+          value={formData.jobTitle} 
+          onChange={handleChange} 
+          required 
+        />
+      </div>
       
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2">Introduction</label>
@@ -109,9 +129,7 @@ const ReportForm = ({ onSubmit, initialData = {} }) => {
         <Button variant="primary" onClick={handleSubmit}>
           {formData.isFinalized ? 'Submit Final Report' : 'Save Draft'}
         </Button>
-        <Button variant="secondary" onClick={() => window.print()}>
-          Download as PDF
-        </Button>
+
       </div>
     </div>
   );

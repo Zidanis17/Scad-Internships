@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '../common/Button';
 
-const ReportCard = ({ report, onView, onEdit, userRole }) => {
+const ReportCard = ({ report, onView, onEdit, onPrintPDF, userRole }) => {
   // Status color mapping
   const statusColors = {
     pending: 'bg-yellow-100 text-yellow-800',
@@ -11,7 +11,7 @@ const ReportCard = ({ report, onView, onEdit, userRole }) => {
   };
 
   return (
-    <div className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
       <div className="flex justify-between items-start">
         <div>
           <h3 className="font-bold text-lg">{report.title}</h3>
@@ -22,12 +22,12 @@ const ReportCard = ({ report, onView, onEdit, userRole }) => {
             Submitted: {new Date(report.submissionDate).toLocaleDateString()}
           </p>
         </div>
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[report.status]}`}>
+        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[report.status]}`}>
           {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
         </span>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 flex-grow">
         <p className="text-sm text-gray-700 line-clamp-2">
           {report.introduction}
         </p>
@@ -40,21 +40,32 @@ const ReportCard = ({ report, onView, onEdit, userRole }) => {
         </div>
       )}
 
-      <div className="mt-4 flex space-x-2">
-        <Button variant="primary" onClick={() => onView(report.id)}>
+      <div className="mt-4 flex flex-wrap gap-2 pt-3 border-t border-gray-100">
+        <Button 
+          variant="primary" 
+          size="sm"
+          onClick={() => onView(report.id)}
+        >
           View Report
         </Button>
         
         {/* Only show edit button if report is not accepted and user is a student */}
         {(userRole === 'student' || userRole === 'proStudent') && 
           report.status !== 'accepted' && (
-            <Button variant="secondary" onClick={() => onEdit(report.id)}>
+            <Button 
+              variant="secondary"
+              size="sm" 
+              onClick={() => onEdit(report.id)}
+            >
               Edit Report
             </Button>
         )}
         
-        {/* Only show download button */}
-        <Button variant="outline" onClick={() => window.open(`/api/reports/${report.id}/pdf`, '_blank')}>
+        <Button 
+          variant="outline"
+          size="sm" 
+          onClick={() => onPrintPDF(report.id)}
+        >
           Download PDF
         </Button>
       </div>

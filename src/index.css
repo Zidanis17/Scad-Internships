@@ -1,3 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  
+  .print-content, 
+  .print-content * {
+    visibility: visible;
+  }
+  
+  .print-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 40px;
+  }
+  
+  /* Additional print-specific styles */
+  .print-content h1 {
+    font-size: 24pt;
+    margin-bottom: 16pt;
+  }
+  
+  .print-content h2 {
+    font-size: 18pt;
+    margin-top: 16pt;
+    margin-bottom: 8pt;
+  }
+  
+  .print-content p {
+    font-size: 12pt;
+    line-height: 1.5;
+    margin-bottom: 10pt;
+  }
+  
+  .print-content ul {
+    margin-left: 20pt;
+  }
+  
+  .print-content li {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+  
+  /* Hide UI elements when printing */
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Hide print-content when not printing */
+.print-content {
+  display: none;
+}
+
+@media print {
+  .print-content {
+    display: block;
+  }
+}

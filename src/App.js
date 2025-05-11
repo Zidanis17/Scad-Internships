@@ -12,6 +12,7 @@ import StudentDashboard from './pages/student/Dashboard';
 import StudentInternship from './pages/student/Internship';
 import StudentProfile from './pages/student/Profile';
 import StudentApplications from './pages/student/Applications';
+import StudentReports from "./pages/student/Reports";
 
 
 
@@ -32,6 +33,7 @@ function App() {
           <Route path="/student/profile" element={<StudentProfile />} />
           <Route path="/student/internships" element={<StudentInternship />} />
           <Route path="/student/applications" element={<StudentApplications />} />
+          <Route path="/student/reports" element={<StudentReports />} />
           
 
         </Routes>
