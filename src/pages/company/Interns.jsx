@@ -318,7 +318,7 @@ const Interns = () => {
           
           {intern.status === 'completed' && intern.evaluated && (
             <Button 
-              className="bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+              className="bg-purple-600 text-white hover:bg-purple-700"
               onClick={() => handleOpenEvaluation(intern)}
             >
               View Evaluation
@@ -572,6 +572,7 @@ const Interns = () => {
             intern={selectedIntern}
             onSubmit={handleSubmitEvaluation}
             readOnly={selectedIntern.evaluated}
+            evaluationType='Student'
           />
         </Modal>
       )}
