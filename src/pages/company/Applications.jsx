@@ -262,14 +262,14 @@ const Applications = () => {
     setSortDirection('desc');
   };
 
+  // Adjust columns to match your Table component's expected format
   const columns = [
-    { header: 'Student', accessor: 'studentName', sortable: true },
-    { header: 'Major', accessor: 'major', sortable: true },
+    { title: 'Student', dataKey: 'studentName' },
+    { title: 'Major', dataKey: 'major' },
     { 
-      header: 'Position', 
-      accessor: 'position',
-      sortable: true,
-      cell: (row) => {
+      title: 'Position', 
+      dataKey: 'position',
+      render: (row) => {
         const internship = internshipPosts.find(post => post.id === row.internshipId);
         return (
           <div>
@@ -281,27 +281,22 @@ const Applications = () => {
         );
       }
     },
+    { title: 'Applied Date', dataKey: 'appliedDate' },
     { 
-      header: 'Applied Date', 
-      accessor: 'appliedDate', 
-      sortable: true 
-    },
-    { 
-      header: 'Status', 
-      accessor: 'status', 
-      sortable: true,
-      cell: (row) => (
+      title: 'Status', 
+      dataKey: 'status', 
+      render: (row) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(row.status)}`}>
           {row.status}
         </span>
       )
     },
     {
-      header: 'Actions',
-      cell: (row) => (
+      title: 'Actions',
+      render: (row) => (
         <div className="flex space-x-2">
           <Button 
-            className="bg-indigo-600 text-white hover:bg-indigo-700 text-xs py-1 px-2"
+            variant="primary"
             onClick={() => {
               setSelectedApplication(row);
               setIsModalOpen(true);
@@ -320,7 +315,7 @@ const Applications = () => {
     const internship = internshipPosts.find(post => post.id === selectedApplication.internshipId);
     
     return (
-      <div className="space-y-6 max-w-full overflow-y-auto">
+      <div className="space-y-6 max-w-full max-h-[80vh] overflow-y-auto">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between pb-6 border-b border-gray-200">
           <div className="mb-4 md:mb-0">
             <h3 className="text-2xl font-bold text-gray-800">{selectedApplication.studentName}</h3>
@@ -402,15 +397,18 @@ const Applications = () => {
           <div className="space-y-2">
             {selectedApplication.documents.map(doc => (
               <div key={doc.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-gray-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <div className="flex items-center flex-1 min-w-0">
+                  <svg className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-gray-700">{doc.name}</span>
+                  <span className="text-gray-700 truncate">{doc.name}</span>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center flex-shrink-0 ml-4">
                   <span className="text-xs text-gray-500 mr-3">{doc.size}</span>
-                  <Button className="bg-indigo-600 text-white hover:bg-indigo-700 text-xs py-1 px-2">
+                  <Button 
+                    variant="primary" 
+                    size="small"
+                  >
                     Download
                   </Button>
                 </div>
@@ -426,20 +424,21 @@ const Applications = () => {
             <div className="flex flex-wrap gap-2">
               {selectedApplication.status !== 'Finalized' && (
                 <Button 
-                  className="bg-blue-600 text-white hover:bg-blue-700"
+                  variant="primary"
                   onClick={() => handleStatusChange(selectedApplication.id, 'Finalized')}
                 >
                   Mark as Finalized
                 </Button>
               )}
               <Button 
-                className="bg-green-600 text-white hover:bg-green-700"
+                variant="primary" 
+                className="bg-green-500 hover:bg-green-600"
                 onClick={() => handleStatusChange(selectedApplication.id, 'Accepted')}
               >
                 Accept Application
               </Button>
               <Button 
-                className="bg-red-600 text-white hover:bg-red-700"
+                variant="danger"
                 onClick={() => handleStatusChange(selectedApplication.id, 'Rejected')}
               >
                 Reject Application
@@ -510,7 +509,7 @@ const Applications = () => {
           </div>
           <div className="mt-4 flex justify-end">
             <Button
-              className="bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
+              variant="secondary"
               onClick={resetFilters}
             >
               Reset Filters
@@ -529,9 +528,6 @@ const Applications = () => {
             <Table
               columns={columns}
               data={filteredApplications}
-              onSort={handleSort}
-              sortField={sortField}
-              sortDirection={sortDirection}
             />
           ) : (
             <div className="text-center py-12">
@@ -551,7 +547,12 @@ const Applications = () => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           title="Application Details"
-          size="xl"
+          size="lg"
+          footer={
+            <div className="flex justify-end">
+              <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Close</Button>
+            </div>
+          }
         >
           {renderApplicationDetails()}
         </Modal>
