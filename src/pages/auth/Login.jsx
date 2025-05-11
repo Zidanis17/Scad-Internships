@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+
 // Dummy users for authentication
 const dummyUsers = [
   { email: 'student@guc.edu.eg', password: 'student123', role: 'student' },
@@ -53,20 +54,24 @@ const Login = () => {
           <h2 className="mt-6 text-3xl font-bold text-gray-900">Login to GUC Internship System</h2>
         </div>
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} name="login-form">
           <div className="space-y-4">
             <Input
               type="email"
+              name="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autocomplete="email"
               className="w-full"
             />
             <Input
               type="password"
+              name="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autocomplete="current-password"
               className="w-full"
             />
           </div>

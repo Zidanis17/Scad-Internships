@@ -72,14 +72,12 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="flex items-center">
                 <img 
                   className="h-8 w-auto mr-2" 
                   src="/logo.png" 
                   alt="GUC Logo" 
                 />
                 <span className="font-bold text-blue-600 text-lg">GUC Internship System</span>
-              </Link>
             </div>
             
             {/* Desktop navigation - only show if not on login page */}
@@ -142,28 +140,62 @@ const Navbar = () => {
               {/* Settings dropdown panel */}
               {profileDropdownOpen && (
                 <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50">
-                  {userRole ? (
-                    <>
-                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Your Profile
-                      </Link>
-                      <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Settings
-                      </Link>
-                      <Link to="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Sign out
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link to="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Login
-                      </Link>
-                      <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Settings
-                      </Link>
-                    </>
-                  )}
+                  {(() => {
+                    if (userRole) {
+                      if (userRole === 'student') {
+                        return (
+                          <>
+                            <Link to="/student/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Your Profile
+                            </Link>
+                            <Link to="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Sign out
+                            </Link>
+                          </>
+                        );
+                      }
+                      if (userRole === 'proStudent') {
+                        return (
+                          <>
+                            <Link to="/proStudent/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Your Profile
+                            </Link>
+                            <Link to="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Sign out
+                            </Link>
+                          </>
+                        );
+                      }
+                      if (userRole === 'company') {
+                        return (
+                          <>
+                            <Link to="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Sign out
+                            </Link>
+                          </>
+                        );
+                      }
+
+                      if (userRole === 'scadOffice') {
+                        return (
+                          <>
+                            <Link to="/scadOffice/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Your Profile
+                            </Link>
+                            <Link to="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Sign out
+                            </Link>
+                          </>
+                        );
+                      }
+                    } else {
+                      return (
+                        <Link to="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          Login
+                        </Link>
+                      );
+                    }
+                  })()}
                 </div>
               )}
             </div>
@@ -234,17 +266,7 @@ const Navbar = () => {
                   </div>
                 </div>
               </div>
-              <div className="mt-3 px-2 space-y-1">
-                <Link to="/profile" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600">
-                  Your Profile
-                </Link>
-                <Link to="/settings" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600">
-                  Settings
-                </Link>
-                <Link to="/logout" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600">
-                  Sign out
-                </Link>
-              </div>
+
             </div>
           )}
         </div>
