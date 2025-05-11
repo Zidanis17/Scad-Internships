@@ -48,10 +48,13 @@ const dummyInternshipPosts = [
     duration: '3 months',
     isPaid: true,
     salary: '8000 EGP/month',
+    skillsRequired: ['JavaScript', 'React', 'Node.js'],
     applicationsCount: 12,
     status: 'Active',
     deadline: '2025-06-15',
-    postedAt: '2025-05-07'
+    postedAt: '2025-05-07',
+    description: 'We are looking for a motivated Software Engineering Intern to join our development team. The intern will work on real-world projects under the guidance of senior developers.',
+    industry: 'Information Technology'
   },
   {
     id: 2,
@@ -59,20 +62,26 @@ const dummyInternshipPosts = [
     duration: '4 months',
     isPaid: true,
     salary: '7500 EGP/month',
+    skillsRequired: ['Figma', 'Adobe XD', 'UI Design', 'Prototyping'],
     applicationsCount: 8,
     status: 'Active',
     deadline: '2025-06-20',
-    postedAt: '2025-05-05'
+    postedAt: '2025-05-05',
+    description: 'Join our design team to create user-centered designs for web and mobile applications. The intern will participate in the entire design process from concept to implementation.',
+    industry: 'Information Technology'
   },
   {
     id: 3,
     title: 'Data Analysis Intern',
     duration: '2 months',
     isPaid: false,
+    skillsRequired: ['Excel', 'SQL', 'Data Visualization'],
     applicationsCount: 5,
     status: 'Active',
     deadline: '2025-06-10',
-    postedAt: '2025-05-03'
+    postedAt: '2025-05-03',
+    description: 'We are seeking a Data Analysis Intern to help our team gather insights from various datasets. The intern will work with our business intelligence team to create reports and visualizations.',
+    industry: 'Information Technology'
   }
 ];
 
@@ -145,6 +154,8 @@ const Dashboard = () => {
   const [selectedIntern, setSelectedIntern] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [isPostDetailsModalOpen, setIsPostDetailsModalOpen] = useState(false);
 
   useEffect(() => {
     // Simulate API calls with dummy data
@@ -158,6 +169,26 @@ const Dashboard = () => {
   if (!company) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const renderSkills = (skills) => {
+    return (
+      <div className="flex flex-wrap gap-1 mt-2">
+        {skills.map((skill, index) => (
+          <span 
+            key={index} 
+            className="bg-indigo-50 text-indigo-700 text-xs px-2 py-1 rounded-full"
+          >
+            {skill}
+          </span>
+        ))}
+      </div>
+    );
+  };
 
   const markAllAsRead = () => {
     const updatedNotifications = company.notifications.map(notification => ({
@@ -357,12 +388,16 @@ const Dashboard = () => {
                     </span>
                   </div>
                   <div className="mt-3 flex space-x-2">
-                    <Link to={`/company/internship-posts/${post.id}`}>
-                      <Button className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm py-1">
-                        View Details
-                      </Button>
-                    </Link>
-                    <Link to={`/company/applications?post=${post.id}`}>
+                    <Button 
+                      className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm py-1"
+                      onClick={() => {
+                        setSelectedPost(post);
+                        setIsPostDetailsModalOpen(true);
+                      }}
+                    >
+                      View Details
+                    </Button>
+                    <Link to="/company/applications">
                       <Button className="bg-white text-indigo-600 border border-indigo-600 hover:bg-indigo-50 text-sm py-1">
                         View Applications
                       </Button>
@@ -593,6 +628,81 @@ const Dashboard = () => {
             intern={selectedIntern}
             onSubmit={handleEvaluationSubmit}
           />
+        </Modal>
+      )}
+
+      {isPostDetailsModalOpen && selectedPost && (
+        <Modal
+          isOpen={isPostDetailsModalOpen}
+          onClose={() => setIsPostDetailsModalOpen(false)}
+          title={selectedPost.title || 'Internship Details'}
+          size="lg"
+        >
+          <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Internship Details</h3>
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Duration:</span>
+                    <span className="ml-2 text-sm">{selectedPost.duration}</span>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Status:</span>
+                    <span className={`ml-2 inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                      selectedPost.status === 'Active' ? 'bg-green-100 text-green-800' : 
+                      selectedPost.status === 'Draft' ? 'bg-yellow-100 text-yellow-800' : 
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {selectedPost.status}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Compensation:</span>
+                    <span className="ml-2 text-sm">
+                      {selectedPost.isPaid ? `Paid (${selectedPost.salary})` : 'Unpaid'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Industry:</span>
+                    <span className="ml-2 text-sm">{selectedPost.industry}</span>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Application Deadline:</span>
+                    <span className="ml-2 text-sm">{formatDate(selectedPost.deadline)}</span>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Posted On:</span>
+                    <span className="ml-2 text-sm">{formatDate(selectedPost.postedAt)}</span>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Applications:</span>
+                    <Link to={`/company/applications?post=${selectedPost.id}`}>
+                      <span className="ml-2 bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full cursor-pointer hover:bg-indigo-200">
+                        {selectedPost.applicationsCount} {selectedPost.applicationsCount === 1 ? 'Application' : 'Applications'}
+                      </span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Description</h3>
+                <p className="text-gray-700 text-sm whitespace-pre-line">{selectedPost.description}</p>
+                
+                <h3 className="text-lg font-semibold text-gray-900 mt-6 mb-2">Skills Required</h3>
+                {renderSkills(selectedPost.skillsRequired)}
+              </div>
+            </div>
+            
+            <div className="mt-8 flex justify-end space-x-3">
+              <Button 
+                className="bg-indigo-600 text-white hover:bg-indigo-700"
+                onClick={() => setIsPostDetailsModalOpen(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
         </Modal>
       )}
     </div>
