@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Input from './Input';
-import Button from './Button'; // Assuming you have a Button component
+import Input from '../common/Input';
+import Button from '../common/Button';
 
 const InternshipForm = ({ onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
