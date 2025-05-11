@@ -44,6 +44,19 @@ const dummyInternships = [
     skills: ['User Research', 'Figma'],
     deadline: '2025-06-25',
     postedAt: '2025-05-05'
+  },
+    {
+    id: 3,
+    jobTitle: 'Business',
+    companyName: 'Business boy',
+    industry: 'Businessing',
+    duration: '3 months we wagba',
+    isPaid: false,
+    salary: null,
+    description: 'JUST DO BUSINESS BRO',
+    skills: ['User Research', 'Figma'],
+    deadline: '2025-06-25',
+    postedAt: '2025-05-05'
   }
 ];
 

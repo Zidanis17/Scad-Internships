@@ -302,7 +302,7 @@ const handleSubmitPost = (postData) => {
         View
       </Button>
       <Button 
-        className="bg-white text-indigo-600 border border-indigo-600 hover:bg-indigo-50 text-xs py-1 px-2"
+        className="bg-blue-600 text-white hover:bg-blue-700 text-sm py-1"
         onClick={() => handleEditPost(row)}
       >
         Edit
@@ -589,7 +589,7 @@ const handleSubmitPost = (postData) => {
             
             <div className="mt-8 flex justify-end space-x-3">
               <Button 
-                className="bg-white text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
+                className="bg-blue-600 text-white hover:bg-blue-700 text-sm py-1"
                 onClick={() => {
                   setIsViewModalOpen(false);
                   handleEditPost(selectedPost);

@@ -29,7 +29,8 @@ const dummyApplications = [
     applicationDate: '2025-04-20',
     documents: ['CV.pdf', 'Portfolio.pdf'],
     uploadedDocuments: []
-  }
+  },
+
 ];
 
 const Applications = () => {

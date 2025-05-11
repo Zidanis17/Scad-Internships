@@ -397,8 +397,8 @@ const Dashboard = () => {
                     >
                       View Details
                     </Button>
-                    <Link to="/company/applications">
-                      <Button className="bg-white text-indigo-600 border border-indigo-600 hover:bg-indigo-50 text-sm py-1">
+                    <Link to={`/company/applications?post=${post.id}`}>
+                      <Button className="bg-blue-600 text-white hover:bg-blue-700 text-sm py-1">
                         View Applications
                       </Button>
                     </Link>
