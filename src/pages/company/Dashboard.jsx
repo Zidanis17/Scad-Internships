@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../../components/common/Button';
+import Modal from '../../components/common/Modal';
+import EvaluationForm from '../../components/evaluation/EvaluationForm';
 
 // Dummy data for the company dashboard
 const dummyCompanyData = {
@@ -83,7 +85,12 @@ const dummyCurrentInterns = [
     startDate: '2025-04-01',
     endDate: '2025-07-01',
     progress: 50,
-    evaluated: false
+    skills: ['JavaScript', 'React', 'Node.js'],
+    supervisor: 'Ahmed Mahmoud',
+    status: 'current',
+    evaluated: false,
+    contactEmail: 'omar.ibrahim@student.guc.edu.eg',
+    phone: '+20 123-456-7890'
   },
   {
     id: 2,
@@ -93,7 +100,12 @@ const dummyCurrentInterns = [
     startDate: '2025-03-15',
     endDate: '2025-06-15',
     progress: 75,
-    evaluated: false
+    skills: ['SQL', 'Excel', 'Python'],
+    supervisor: 'Hossam Ali',
+    status: 'current',
+    evaluated: false,
+    contactEmail: 'nour.ahmed@student.guc.edu.eg',
+    phone: '+20 123-456-7891'
   }
 ];
 
@@ -130,6 +142,9 @@ const Dashboard = () => {
   const [currentInterns, setCurrentInterns] = useState([]);
   const [recentApplications, setRecentApplications] = useState([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [selectedIntern, setSelectedIntern] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
 
   useEffect(() => {
     // Simulate API calls with dummy data
@@ -156,7 +171,111 @@ const Dashboard = () => {
     setUnreadNotifications(0);
   };
 
-  // Calculate total applications across all internship posts
+  const handleMarkAsComplete = (internId) => {
+    const updatedInterns = currentInterns.map(intern => {
+      if (intern.id === internId) {
+        return { ...intern, status: 'completed', progress: 100 };
+      }
+      return intern;
+    });
+    setCurrentInterns(updatedInterns.filter(intern => intern.status === 'current'));
+    const completedIntern = updatedInterns.find(intern => intern.id === internId);
+    setSelectedIntern(completedIntern);
+    setIsEvaluationModalOpen(true);
+  };
+
+  const handleEvaluationSubmit = (evaluation) => {
+    const updatedInterns = currentInterns.map(intern => {
+      if (intern.id === selectedIntern.id) {
+        return { ...intern, evaluated: true };
+      }
+      return intern;
+    });
+    setCurrentInterns(updatedInterns);
+    setIsEvaluationModalOpen(false);
+    setSelectedIntern(null);
+    console.log('Evaluation submitted:', evaluation);
+  };
+
+  const renderInternDetails = () => {
+    if (!selectedIntern) return null;
+    
+    return (
+      <div className="space-y-6 max-w-full overflow-y-auto">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between pb-6 border-b border-gray-200">
+          <div className="mb-4 md:mb-0">
+            <h3 className="text-2xl font-bold text-gray-800">{selectedIntern.name}</h3>
+            <p className="text-lg text-indigo-600">{selectedIntern.position}</p>
+            <p className="text-gray-600">{selectedIntern.major}</p>
+          </div>
+          <div>
+            <span 
+              className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
+                selectedIntern.status === 'current' 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-blue-100 text-blue-800'
+              }`}
+            >
+              {selectedIntern.status === 'current' ? 'Current Intern' : 'Internship Complete'}
+            </span>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h4 className="text-lg font-medium text-gray-700 mb-3">Internship Details</h4>
+            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Start Date:</span>
+                <span className="md:text-right">{selectedIntern.startDate}</span>
+              </p>
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">End Date:</span>
+                <span className="md:text-right">{selectedIntern.endDate}</span>
+              </p>
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Supervisor:</span>
+                <span className="md:text-right">{selectedIntern.supervisor}</span>
+              </p>
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Progress:</span>
+                <span className="md:text-right">{selectedIntern.progress}% Complete</span>
+              </p>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-lg font-medium text-gray-700 mb-3">Contact Information</h4>
+            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Email:</span>
+                <span className="md:text-right break-all">{selectedIntern.contactEmail}</span>
+              </p>
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Phone:</span>
+                <span className="md:text-right">{selectedIntern.phone}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <h4 className="text-lg font-medium text-gray-700 mb-3">Skills</h4>
+          <div className="flex flex-wrap gap-2">
+            {selectedIntern.skills.map((skill, index) => (
+              <span 
+                key={index}
+                className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const totalApplications = internshipPosts.reduce((total, post) => total + post.applicationsCount, 0);
 
   return (
@@ -182,7 +301,6 @@ const Dashboard = () => {
                 Manage Posts
               </Link>
             </div>
-            
             <div className="bg-white rounded-lg shadow-md p-6 flex flex-col">
               <h3 className="text-gray-500 text-sm font-medium mb-1">Total Applications</h3>
               <p className="text-3xl font-bold text-gray-800">{totalApplications}</p>
@@ -190,7 +308,6 @@ const Dashboard = () => {
                 Review Applications
               </Link>
             </div>
-            
             <div className="bg-white rounded-lg shadow-md p-6 flex flex-col">
               <h3 className="text-gray-500 text-sm font-medium mb-1">Current Interns</h3>
               <p className="text-3xl font-bold text-gray-800">{currentInterns.length}</p>
@@ -303,18 +420,23 @@ const Dashboard = () => {
                         {intern.startDate} to {intern.endDate}
                       </p>
                     </div>
-                    <div className="mt-3">
-                      <Link to={`/company/interns/${intern.id}`}>
-                        <Button className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm py-1">
-                          View Details
+                    <div className="mt-3 flex space-x-2">
+                      <Button 
+                        className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm py-1"
+                        onClick={() => {
+                          setSelectedIntern(intern);
+                          setIsDetailsModalOpen(true);
+                        }}
+                      >
+                        View Details
+                      </Button>
+                      {intern.status === 'current' && (
+                        <Button 
+                          className="bg-blue-600 text-white hover:bg-blue-700 text-sm py-1"
+                          onClick={() => handleMarkAsComplete(intern.id)}
+                        >
+                          Mark as Complete
                         </Button>
-                      </Link>
-                      {!intern.evaluated && (
-                        <Link to={`/company/interns/${intern.id}/evaluate`} className="ml-2">
-                          <Button className="bg-white text-indigo-600 border border-indigo-600 hover:bg-indigo-50 text-sm py-1">
-                            Evaluate
-                          </Button>
-                        </Link>
                       )}
                     </div>
                   </div>
@@ -446,9 +568,33 @@ const Dashboard = () => {
               </Link>
             </div>
           </div>
-
         </div>
       </div>
+
+      {/* Modals */}
+      {isDetailsModalOpen && selectedIntern && (
+        <Modal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          title="Intern Details"
+          size="xl"
+        >
+          {renderInternDetails()}
+        </Modal>
+      )}
+
+      {isEvaluationModalOpen && selectedIntern && (
+        <Modal
+          isOpen={isEvaluationModalOpen}
+          onClose={() => setIsEvaluationModalOpen(false)}
+          title="Evaluate Intern"
+        >
+          <EvaluationForm
+            intern={selectedIntern}
+            onSubmit={handleEvaluationSubmit}
+          />
+        </Modal>
+      )}
     </div>
   );
 };

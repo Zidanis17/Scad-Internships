@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import Button from '../../components/common/Button';
-import Table from '../../components/common/Table';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
 import EvaluationForm from '../../components/evaluation/EvaluationForm';
@@ -109,6 +107,7 @@ const Interns = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
   const [selectedIntern, setSelectedIntern] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -171,6 +170,16 @@ const Interns = () => {
 
   const handleCloseEvaluation = () => {
     setShowEvaluationModal(false);
+    setSelectedIntern(null);
+  };
+
+  const handleViewDetails = (intern) => {
+    setSelectedIntern(intern);
+    setShowDetailsModal(true);
+  };
+
+  const handleCloseDetails = () => {
+    setShowDetailsModal(false);
     setSelectedIntern(null);
   };
 
@@ -282,11 +291,12 @@ const Interns = () => {
         )}
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link to={`/company/interns/${intern.id}`}>
-            <Button className="bg-indigo-600 text-white hover:bg-indigo-700">
-              View Details
-            </Button>
-          </Link>
+          <Button 
+            className="bg-indigo-600 text-white hover:bg-indigo-700"
+            onClick={() => handleViewDetails(intern)}
+          >
+            View Details
+          </Button>
           
           {intern.status === 'current' && (
             <Button 
@@ -310,6 +320,169 @@ const Interns = () => {
             <Button 
               className="bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
               onClick={() => handleOpenEvaluation(intern)}
+            >
+              View Evaluation
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderDetailsContent = () => {
+    if (!selectedIntern) return null;
+    
+    const startDate = new Date(selectedIntern.startDate);
+    const endDate = new Date(selectedIntern.endDate);
+    const durationInDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+    const durationInWeeks = Math.ceil(durationInDays / 7);
+    
+    return (
+      <div className="space-y-6 max-w-full overflow-y-auto">
+        {/* Header with profile info */}
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between pb-6 border-b border-gray-200">
+          <div className="mb-4 md:mb-0">
+            <h3 className="text-2xl font-bold text-gray-800">{selectedIntern.name}</h3>
+            <p className="text-lg text-indigo-600">{selectedIntern.position}</p>
+            <p className="text-gray-600">{selectedIntern.major}</p>
+          </div>
+          <div>
+            <span 
+              className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
+                selectedIntern.status === 'current' 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-blue-100 text-blue-800'
+              }`}
+            >
+              {selectedIntern.status === 'current' ? 'Current Intern' : 'Internship Complete'}
+            </span>
+          </div>
+        </div>
+        
+        {/* Internship details */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h4 className="text-lg font-medium text-gray-700 mb-3">Internship Details</h4>
+            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Duration:</span>
+                <span className="md:text-right">{durationInWeeks} weeks ({durationInDays} days)</span>
+              </p>
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Start Date:</span>
+                <span className="md:text-right">{selectedIntern.startDate}</span>
+              </p>
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">End Date:</span>
+                <span className="md:text-right">{selectedIntern.endDate}</span>
+              </p>
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Supervisor:</span>
+                <span className="md:text-right">{selectedIntern.supervisor}</span>
+              </p>
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Progress:</span>
+                <span className="md:text-right">{selectedIntern.progress}% Complete</span>
+              </p>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-lg font-medium text-gray-700 mb-3">Contact Information</h4>
+            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Email:</span>
+                <span className="md:text-right break-all">{selectedIntern.contactEmail}</span>
+              </p>
+              <p className="flex flex-col md:flex-row md:justify-between">
+                <span className="font-medium text-gray-600">Phone:</span>
+                <span className="md:text-right">{selectedIntern.phone}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Skills */}
+        <div>
+          <h4 className="text-lg font-medium text-gray-700 mb-3">Skills</h4>
+          <div className="flex flex-wrap gap-2">
+            {selectedIntern.skills.map((skill, index) => (
+              <span 
+                key={index}
+                className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+        
+        {/* Application History */}
+        <div>
+          <h4 className="text-lg font-medium text-gray-700 mb-3">Application History</h4>
+          <div className="bg-gray-50 p-4 rounded-lg overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Position</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Applied On</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedIntern.applications.map(app => (
+                  <tr key={app.id} className="hover:bg-gray-100">
+                    <td className="py-3 px-4 text-sm text-gray-800">{app.position}</td>
+                    <td className="py-3 px-4 text-sm text-gray-600">{app.applyDate}</td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        app.status === 'Accepted' ? 'bg-green-100 text-green-800' :
+                        app.status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {app.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        {/* Footer with actions */}
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+          {selectedIntern.status === 'current' && (
+            <Button 
+              className="bg-blue-600 text-white hover:bg-blue-700"
+              onClick={() => {
+                handleCloseDetails();
+                handleCompleteInternship(selectedIntern.id);
+              }}
+            >
+              Mark as Complete
+            </Button>
+          )}
+          
+          {selectedIntern.status === 'completed' && !selectedIntern.evaluated && (
+            <Button 
+              className="bg-purple-600 text-white hover:bg-purple-700"
+              onClick={() => {
+                handleCloseDetails();
+                handleOpenEvaluation(selectedIntern);
+              }}
+            >
+              Evaluate Intern
+            </Button>
+          )}
+          
+          {selectedIntern.status === 'completed' && selectedIntern.evaluated && (
+            <Button 
+              className="bg-purple-600 text-white hover:bg-purple-700"
+              onClick={() => {
+                handleCloseDetails();
+                handleOpenEvaluation(selectedIntern);
+              }}
             >
               View Evaluation
             </Button>
@@ -400,6 +573,18 @@ const Interns = () => {
             onSubmit={handleSubmitEvaluation}
             readOnly={selectedIntern.evaluated}
           />
+        </Modal>
+      )}
+
+      {/* Details Modal */}
+      {showDetailsModal && selectedIntern && (
+        <Modal
+          isOpen={showDetailsModal}
+          onClose={handleCloseDetails}
+          title="Intern Details"
+          size="xl"
+        >
+          {renderDetailsContent()}
         </Modal>
       )}
     </div>
