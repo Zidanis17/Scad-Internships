@@ -13,6 +13,17 @@ import StudentInternship from './pages/student/Internship';
 import StudentProfile from './pages/student/Profile';
 import StudentApplications from './pages/student/Applications';
 import StudentReports from "./pages/student/Reports";
+import ProStudentDashboard from 'pages/proStudent/ProStudentDashboard';
+import Assessments from 'pages/proStudent/Assessments';
+import Workshops from 'pages/proStudent/Workshops';
+import CareerGuidance from 'pages/proStudent/CareerGuidance';
+import Profile from './pages/student/Profile';
+import ScadDashboard from 'pages/scad/ScadDashboard';
+import InternshipCycles from 'pages/scad/InternshipCycles';
+import ScadProfile from 'pages/scad/ScadProfile';
+import CompanyApplicationsScad from 'pages/scad/CompanyApplicationsScad';
+import StudentManagement from 'pages/scad/StudentManagement';
+
 
 
 
@@ -34,6 +45,29 @@ function App() {
           <Route path="/student/internships" element={<StudentInternship />} />
           <Route path="/student/applications" element={<StudentApplications />} />
           <Route path="/student/reports" element={<StudentReports />} />
+          <Route path="/prostudent/dashboard" element={<ProStudentDashboard />} />
+          <Route path="/prostudent/profile" element={<Profile />} />
+          <Route path="/prostudent/internships" element={<StudentInternship />} />
+          <Route path="/prostudent/applications" element={<StudentApplications />} />
+          <Route path="/prostudent/reports" element={<StudentReports />} />
+          <Route path="/prostudent/assessments" element={<Assessments />} />
+          <Route path="/prostudent/workshops" element={<Workshops />} />
+          <Route path="/prostudent/career-guidance" element={<CareerGuidance />} />
+          <Route path="/scad/dashboard" element={<ScadDashboard />} />
+          <Route path="/scad/company-applications" element={<CompanyApplicationsScad />} />
+          <Route path="/scad/internship-cycles" element={<InternshipCycles />} />
+          <Route path="/scadOffice/profile" element={<ScadProfile />} />
+          <Route path="/scad/student-management" element={<StudentManagement />} />
+
+
+
+
+
+
+
+
+
+
           
 
         </Routes>
