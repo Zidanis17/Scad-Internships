@@ -148,7 +148,7 @@ const Navbar = () => {
                             <Link to="/student/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Your Profile
                             </Link>
-                            <Link to="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Sign out
                             </Link>
                           </>
@@ -160,7 +160,7 @@ const Navbar = () => {
                             <Link to="/proStudent/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Your Profile
                             </Link>
-                            <Link to="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Sign out
                             </Link>
                           </>
@@ -169,7 +169,7 @@ const Navbar = () => {
                       if (userRole === 'company') {
                         return (
                           <>
-                            <Link to="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Sign out
                             </Link>
                           </>
@@ -182,7 +182,7 @@ const Navbar = () => {
                             <Link to="/scadOffice/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Your Profile
                             </Link>
-                            <Link to="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Sign out
                             </Link>
                           </>
