@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
+import { AuthContext } from '../../context/AuthContext';
 
 // Dummy majors data
 const majorOptions = [
@@ -126,21 +127,14 @@ const Profile = () => {
   const [isPro, setIsPro] = useState(false);
   const [viewingCompanies, setViewingCompanies] = useState([]);
   const [newSkill, setNewSkill] = useState({ name: '', level: 'Beginner' });
+  const { userRole, login } = useContext(AuthContext);
 
   useEffect(() => {
     // Simulate API call with dummy data
     setTimeout(() => {
       setProfile(dummyStudentProfile);
       setIsLoading(false);
-      
-      // Check if student is PRO (3 months of internship required)
-      const totalDuration = dummyStudentProfile.previousExperiences.reduce((total, exp) => {
-        const months = parseInt(exp.duration.split(' ')[0], 10) || 0;
-        return total + months;
-      }, 0);
-      setIsPro(totalDuration >= 3);
-
-      // Dummy companies that viewed profile (PRO feature)
+      // Set dummy companies that viewed profile (PRO feature)
       setViewingCompanies([
         { name: 'Google Egypt', viewDate: '2025-05-01' },
         { name: 'Vodafone', viewDate: '2025-05-05' },
@@ -148,6 +142,20 @@ const Profile = () => {
       ]);
     }, 500);
   }, []);
+
+  useEffect(() => {
+    if (profile) {
+      const totalDuration = profile.previousExperiences.reduce((total, exp) => {
+        const months = parseInt(exp.duration.split(' ')[0], 10) || 0;
+        return total + months;
+      }, 0);
+      const isProStudent = totalDuration >= 3;
+      setIsPro(isProStudent);
+      if (isProStudent && userRole === 'student') {
+        login('proStudent');
+      }
+    }
+  }, [profile, userRole, login]);
 
   useEffect(() => {
     if (profile && profile.personalInfo.major) {
@@ -235,11 +243,6 @@ const Profile = () => {
       });
     }
     setIsExperienceModalOpen(false);
-    const totalDuration = profile.previousExperiences.reduce((total, exp) => {
-      const months = parseInt(exp.duration.split(' ')[0], 10) || 0;
-      return total + months;
-    }, 0);
-    setIsPro(totalDuration >= 3);
   };
 
   // Handlers for activities
