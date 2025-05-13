@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from 'components/common/ToastContext';
 import Navbar from './components/navigation/Navbar';
 import Login from './pages/auth/Login';
 import CompanyRegistration from './pages/auth/CompanyRegistration';
@@ -23,6 +24,7 @@ import InternshipCycles from 'pages/scad/InternshipCycles';
 import ScadProfile from 'pages/scad/ScadProfile';
 import CompanyApplicationsScad from 'pages/scad/CompanyApplicationsScad';
 import StudentManagement from 'pages/scad/StudentManagement';
+import FacultyReportReview from 'pages/faculty/ReportReviews'
 
 
 
@@ -30,6 +32,7 @@ import StudentManagement from 'pages/scad/StudentManagement';
 function App() {
   return (
     <AuthProvider>
+      <ToastProvider>
       <Router>
         <Navbar />
         <Routes>
@@ -58,20 +61,12 @@ function App() {
           <Route path="/scad/internship-cycles" element={<InternshipCycles />} />
           <Route path="/scadOffice/profile" element={<ScadProfile />} />
           <Route path="/scad/student-management" element={<StudentManagement />} />
-
-
-
-
-
-
-
-
-
-
+          <Route path="/faculty/report-reviews" element={<FacultyReportReview />} />
           
 
         </Routes>
       </Router>
+      </ToastProvider>
     </AuthProvider>
   );
 }
