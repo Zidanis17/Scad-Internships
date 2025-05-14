@@ -3,6 +3,7 @@ import Button from '../common/Button';
 
 const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company' }) => {
   const [formData, setFormData] = useState({
+    companyName: initialData.companyName || '', // Add companyName to state
     rating: initialData.rating || 3,
     strengths: initialData.strengths || '',
     areasForImprovement: initialData.areasForImprovement || '',
@@ -31,11 +32,29 @@ const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company'
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold">
-        {evaluationType === 'company' 
-          ? 'Evaluate Your Internship Experience' 
+        {evaluationType === 'company'
+          ? 'Evaluate Your Internship Experience'
           : 'Evaluate Student Performance'}
       </h2>
-      
+
+      {/* Add Company Name field */}
+      <div>
+        <label className="block text-gray-700 text-sm font-bold mb-2">Company Name</label>
+        {initialData.id ? (
+          <p className="text-gray-700">{formData.companyName}</p> // Display only for editing
+        ) : (
+          <input
+            type="text"
+            name="companyName"
+            value={formData.companyName}
+            onChange={handleChange}
+            className="border rounded p-2 w-full"
+            placeholder="Enter the company name"
+            required
+          />
+        )}
+      </div>
+
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2">Overall Rating</label>
         <div className="flex space-x-2">
@@ -46,10 +65,10 @@ const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company'
               onClick={() => handleRatingChange(star)}
               className="focus:outline-none"
             >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                fill={star <= formData.rating ? 'currentColor' : 'none'} 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill={star <= formData.rating ? 'currentColor' : 'none'}
                 stroke="currentColor"
                 className={`w-8 h-8 ${star <= formData.rating ? 'text-yellow-500' : 'text-gray-400'}`}
               >
@@ -59,50 +78,51 @@ const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company'
           ))}
         </div>
       </div>
-      
+
+      {/* Rest of the form remains unchanged */}
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2">
           {evaluationType === 'company' ? 'Strengths of the Internship' : 'Student Strengths'}
         </label>
-        <textarea 
-          name="strengths" 
-          value={formData.strengths} 
-          onChange={handleChange} 
-          className="border rounded p-2 w-full h-24" 
-          placeholder={evaluationType === 'company' 
-            ? 'What aspects of the internship were most valuable?' 
+        <textarea
+          name="strengths"
+          value={formData.strengths}
+          onChange={handleChange}
+          className="border rounded p-2 w-full h-24"
+          placeholder={evaluationType === 'company'
+            ? 'What aspects of the internship were most valuable?'
             : 'What were the student\'s strongest skills or attributes?'}
         ></textarea>
       </div>
-      
+
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2">
           {evaluationType === 'company' ? 'Areas for Improvement' : 'Areas for Student Development'}
         </label>
-        <textarea 
-          name="areasForImprovement" 
-          value={formData.areasForImprovement} 
-          onChange={handleChange} 
-          className="border rounded p-2 w-full h-24" 
-          placeholder={evaluationType === 'company' 
-            ? 'What aspects of the internship could be improved?' 
+        <textarea
+          name="areasForImprovement"
+          value={formData.areasForImprovement}
+          onChange={handleChange}
+          className="border rounded p-2 w-full h-24"
+          placeholder={evaluationType === 'company'
+            ? 'What aspects of the internship could be improved?'
             : 'What skills or attributes could the student develop further?'}
         ></textarea>
       </div>
-      
+
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2">
           Additional Comments
         </label>
-        <textarea 
-          name="comments" 
-          value={formData.comments} 
-          onChange={handleChange} 
-          className="border rounded p-2 w-full h-24" 
+        <textarea
+          name="comments"
+          value={formData.comments}
+          onChange={handleChange}
+          className="border rounded p-2 w-full h-24"
           placeholder="Any other comments or feedback"
         ></textarea>
       </div>
-      
+
       {evaluationType === 'company' && (
         <div className="flex items-center">
           <input
@@ -118,10 +138,25 @@ const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company'
           </label>
         </div>
       )}
-      
-      <Button variant="primary" onClick={handleSubmit}>
-        Submit Evaluation
-      </Button>
+
+      <div className="flex justify-end space-x-4">
+        {initialData.rating && (
+          <Button
+            variant="danger"
+            className="bg-red-600 text-white hover:bg-red-700"
+            onClick={() => {
+              if (window.onDeleteEvaluation) {
+                window.onDeleteEvaluation();
+              }
+            }}
+          >
+            Delete Evaluation
+          </Button>
+        )}
+        <Button variant="primary" onClick={handleSubmit}>
+          Submit Evaluation
+        </Button>
+      </div>
     </div>
   );
 };
