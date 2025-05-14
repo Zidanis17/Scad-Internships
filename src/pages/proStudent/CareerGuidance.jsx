@@ -216,8 +216,18 @@ const CareerGuidance = () => {
         size="large"
       >
         <div className="space-y-4">
-          <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
-            <p className="text-gray-500">Simulated Video Call</p>
+          <div className="bg-black h-64 rounded-lg flex items-center justify-center overflow-hidden">
+            <iframe 
+              className="w-full h-full object-contain" 
+              width="640" 
+              height="360" 
+              src="https://www.youtube.com/embed/OA4JhdNf-DA?controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1" 
+              title="Computer Science with Theatricality - Illinois Computer Science Teaching Workshop 2021" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
           </div>
           <div className="flex space-x-4">
             <Button
