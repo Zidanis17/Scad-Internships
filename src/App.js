@@ -24,7 +24,11 @@ import InternshipCycles from 'pages/scad/InternshipCycles';
 import ScadProfile from 'pages/scad/ScadProfile';
 import CompanyApplicationsScad from 'pages/scad/CompanyApplicationsScad';
 import StudentManagement from 'pages/scad/StudentManagement';
+import Statistics from 'pages/scad/Statistics';
 import FacultyReportReview from 'pages/faculty/ReportReviews'
+import FacultyDashboard from 'pages/faculty/FacultyDashboard';
+import FacultyStatistics from 'pages/faculty/FacultyStatistics';
+import FacultyProfile from 'pages/faculty/FacultyProfile'
 
 
 
@@ -61,8 +65,11 @@ function App() {
           <Route path="/scad/internship-cycles" element={<InternshipCycles />} />
           <Route path="/scadOffice/profile" element={<ScadProfile />} />
           <Route path="/scad/student-management" element={<StudentManagement />} />
+          <Route path="/scad/statistics" element={<Statistics />} />
           <Route path="/faculty/report-reviews" element={<FacultyReportReview />} />
-          
+          <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+          <Route path="/faculty/faculty-statistics" element={<FacultyStatistics />} />
+          <Route path="/faculty/profile" element={<FacultyProfile />} />
 
         </Routes>
       </Router>
