@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
+import CustomVideoPlayer from '../../components/common/CustomVideoPlayer';
 
 // Dummy workshop data
 const dummyWorkshops = [
@@ -207,14 +208,7 @@ const Workshops = () => {
         <div className="space-y-4">
           <div className="flex space-x-4">
             <div className="flex-1">
-              <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500">Simulated Live Video Stream</p>
-              </div>
-              <div className="flex justify-between mt-2">
-                <Button variant="secondary">Play</Button>
-                <Button variant="secondary">Pause</Button>
-                <Button variant="secondary">Stop</Button>
-              </div>
+              <CustomVideoPlayer videoId="OA4JhdNf-DA" />
             </div>
             <div className="w-1/3">
               <h4 className="font-semibold mb-2">Chat</h4>
