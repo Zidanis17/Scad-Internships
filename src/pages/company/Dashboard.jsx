@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate  } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
 import InternshipForm from '../../components/internship/InternshipForm';
 import EvaluationForm from '../../components/evaluation/EvaluationForm';
 
 // Dummy data for the company dashboard
+
 const dummyCompanyData = {
   name: 'Tech Solutions Inc.',
   id: 'COMP-5678',
@@ -21,7 +22,15 @@ const dummyCompanyData = {
       title: 'New Application Received',
       message: 'Ahmed Hassan has applied for "Software Engineering Intern" position.',
       date: '2025-05-10',
-      read: false
+      read: false,
+      details: 'Ahmed Hassan (Computer Science, Semester 8) has applied for the "Software Engineering Intern" position. Their application includes experience with JavaScript, React, and Node.js. They are available to start immediately and can work full-time for the duration of the internship.',
+      actions: [
+        { 
+          label: 'Review Application', 
+          action: 'view',
+          path: '/company/applications'
+        }
+      ]
     },
     {
       id: 2,
@@ -29,7 +38,15 @@ const dummyCompanyData = {
       title: 'Intern Completion',
       message: 'Mariam Ali has completed her internship. Please submit an evaluation.',
       date: '2025-05-08',
-      read: false
+      read: false,
+      details: 'Mariam Ali has completed her 3-month Data Analysis internship. According to our records, she has fulfilled all required hours. Please submit an evaluation of her performance to complete the internship process. Your evaluation is crucial for her academic requirements.',
+      actions: [
+        { 
+          label: 'Submit Evaluation', 
+          action: 'evaluate',
+          path: '/company/interns'
+        }
+      ]
     },
     {
       id: 3,
@@ -37,7 +54,15 @@ const dummyCompanyData = {
       title: 'New Internship Cycle',
       message: 'Summer 2025 internship cycle has begun! Post your internship opportunities now.',
       date: '2025-05-01',
-      read: true
+      read: true,
+      details: 'The Summer 2025 internship cycle has officially begun! This is the perfect time to post your internship opportunities to attract top talent from our partner universities. Internship positions posted early typically receive 40% more qualified applications. The application window for students will be open until June 30, 2025.',
+      actions: [
+        { 
+          label: 'Post New Internship', 
+          action: 'create',
+          path: '/company/internship-posts'
+        }
+      ]
     }
   ]
 };
@@ -146,6 +171,97 @@ const dummyRecentApplications = [
   }
 ];
 
+// Modal component for notification details - copied from ProStudentDashboard
+const NotificationModal = ({ notification, onClose, onAction }) => {
+  if (!notification) return null;
+
+  // Define icon based on notification type
+  const getTypeIcon = () => {
+    switch (notification.type) {
+      case 'application':
+        return (
+          <div className="bg-indigo-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        );
+      case 'intern':
+        return (
+          <div className="bg-green-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+        );
+      case 'cycle':
+        return (
+          <div className="bg-yellow-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        );
+      default:
+        return (
+          <div className="bg-gray-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-auto overflow-hidden animate-fade-in-up">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200 flex items-start space-x-4">
+          {getTypeIcon()}
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-gray-900">{notification.title}</h3>
+            <p className="text-sm text-gray-500 mt-1">{notification.date}</p>
+          </div>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500 focus:outline-none"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        {/* Content */}
+        <div className="p-6">
+          <p className="text-gray-600">{notification.details}</p>
+        </div>
+        
+        {/* Actions */}
+        <div className="p-6 bg-gray-50 flex flex-wrap justify-end space-x-3">
+          <button 
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded focus:outline-none"
+          >
+            Close
+          </button>
+          {notification.actions && notification.actions.map((action, index) => (
+            <button 
+              key={index}
+              onClick={() => onAction(action)}
+              className="px-4 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded focus:outline-none"
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 const Dashboard = () => {
   const [company, setCompany] = useState(null);
   const [internshipPosts, setInternshipPosts] = useState([]);
@@ -159,6 +275,8 @@ const Dashboard = () => {
   const [isPostDetailsModalOpen, setIsPostDetailsModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [formMode, setFormMode] = useState('create');
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Simulate API calls with dummy data
@@ -205,6 +323,41 @@ const Dashboard = () => {
     setUnreadNotifications(0);
   };
 
+  const handleNotificationAction = (action) => {
+    console.log(`Action triggered: ${action.action}`);
+    // Close the modal
+    setSelectedNotification(null);
+    
+    // Navigate to the corresponding page
+    if (action.path) {
+      navigate(action.path);
+    }
+  };
+
+
+  
+  const handleModalClose = () => {
+    setSelectedNotification(null);
+  };
+
+    const handleNotificationClick = (notification) => {
+    // Mark this notification as read
+    const updatedNotifications = company.notifications.map(n => 
+      n.id === notification.id ? { ...n, read: true } : n
+    );
+    
+    setCompany({
+      ...company,
+      notifications: updatedNotifications
+    });
+    
+    // Update unread count
+    setUnreadNotifications(updatedNotifications.filter(n => !n.read).length);
+    
+    // Show the notification modal
+    setSelectedNotification(notification);
+  };
+
   const handleMarkAsComplete = (internId) => {
     const updatedInterns = currentInterns.map(intern => {
       if (intern.id === internId) {
@@ -236,6 +389,8 @@ const Dashboard = () => {
     setSelectedPost(null);
     setIsFormModalOpen(true);
   };
+
+  
 
   const handleSubmitPost = (postData) => {
     const { jobTitle, skills, ...rest } = postData;
@@ -518,7 +673,8 @@ const Dashboard = () => {
 
         {/* Right Column */}
         <div className="space-y-8">
-          {/* Notifications */}
+
+        {/* Notifications */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">
@@ -543,7 +699,8 @@ const Dashboard = () => {
                 company.notifications.map((notification) => (
                   <div 
                     key={notification.id} 
-                    className={`p-3 rounded-md ${notification.read ? 'bg-gray-50' : 'bg-indigo-50'}`}
+                    className={`p-3 rounded-md ${notification.read ? 'bg-gray-50' : 'bg-indigo-50'} cursor-pointer`}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex justify-between">
                       <h3 className="font-medium text-gray-900">{notification.title}</h3>
@@ -753,6 +910,15 @@ const Dashboard = () => {
             mode="create"
           />
         </Modal>
+      )}
+
+      {/* Notification Modal */}
+      {selectedNotification && (
+        <NotificationModal 
+          notification={selectedNotification}
+          onClose={handleModalClose}
+          onAction={handleNotificationAction}
+        />
       )}
     </div>
   );
