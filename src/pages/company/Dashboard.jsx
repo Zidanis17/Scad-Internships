@@ -876,6 +876,7 @@ const Dashboard = () => {
         >
           <EvaluationForm
             intern={selectedIntern}
+            evaluationType= {"student"}
             onSubmit={handleEvaluationSubmit}
           />
         </Modal>
