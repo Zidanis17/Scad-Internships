@@ -1,14 +1,13 @@
 import React, { useState, useRef } from 'react';
 
 const CustomVideoPlayer = ({ videoId, isLive }) => {
-  const [playerVisible, setPlayerVisible] = useState(false);
-  const [videoPlaying, setVideoPlaying] = useState(false);
+  const [playerVisible, setPlayerVisible] = useState(isLive);
+  const [videoPlaying, setVideoPlaying] = useState(isLive);
   const iframeRef = useRef(null);
 
   const handlePlay = () => {
     setPlayerVisible(true);
     setVideoPlaying(true);
-    
     if (iframeRef.current) {
       try {
         iframeRef.current.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
@@ -20,7 +19,6 @@ const CustomVideoPlayer = ({ videoId, isLive }) => {
 
   const handlePause = () => {
     setVideoPlaying(false);
-    
     if (iframeRef.current) {
       try {
         iframeRef.current.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
@@ -32,7 +30,6 @@ const CustomVideoPlayer = ({ videoId, isLive }) => {
 
   const handleStop = () => {
     setVideoPlaying(false);
-    
     if (iframeRef.current) {
       try {
         iframeRef.current.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
@@ -46,19 +43,17 @@ const CustomVideoPlayer = ({ videoId, isLive }) => {
     <div className="space-y-2">
       <div className="bg-black h-64 rounded-lg flex items-center justify-center overflow-hidden">
         {!playerVisible ? (
-          <div 
-            className="w-full h-full flex items-center justify-center cursor-pointer"
+          <button
             onClick={handlePlay}
+            className="text-white bg-blue-600 px-4 py-2 rounded"
           >
-            <div className="text-white text-4xl bg-black bg-opacity-50 p-4 rounded-full">
-              ▶
-            </div>
-          </div>
+            Play Video
+          </button>
         ) : (
           <iframe
             ref={iframeRef}
             className="w-full h-full"
-            src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&controls=${isLive ? 0 : 1}&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&autoplay=1`}
+            src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&controls=${isLive ? 0 : 1}&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&autoplay=${isLive ? 1 : 0}`}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -66,21 +61,21 @@ const CustomVideoPlayer = ({ videoId, isLive }) => {
           ></iframe>
         )}
       </div>
-      {isLive && (
+      {!isLive && (
         <div className="flex justify-between mt-2">
-          <button 
+          <button
             onClick={handlePlay}
             className={`px-4 py-2 rounded ${videoPlaying ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'}`}
           >
             Play
           </button>
-          <button 
+          <button
             onClick={handlePause}
-            className={`px-4 py-2 rounded ${!videoPlaying && playerVisible ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'}`}
+            className={`px-4 py-2 rounded ${!videoPlaying ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'}`}
           >
             Pause
           </button>
-          <button 
+          <button
             onClick={handleStop}
             className="px-4 py-2 rounded bg-gray-600 text-white"
           >
