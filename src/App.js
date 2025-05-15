@@ -47,7 +47,7 @@ function App() {
           <Route path="/company/internship-posts" element={<InternshipPosts />} />
           <Route path="/company/applications" element={<CompanyApplications />} />
           <Route path="/company/interns" element={<CompanyInterns />} />
-          <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student/dashboard" element={<ProStudentDashboard />} />
           <Route path="/student/profile" element={<StudentProfile />} />
           <Route path="/student/internships" element={<StudentInternship />} />
           <Route path="/student/applications" element={<StudentApplications />} />

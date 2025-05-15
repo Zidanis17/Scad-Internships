@@ -39,8 +39,8 @@ const dummyStudentData = {
       details: 'Congratulations! Your application has been reviewed and accepted. Please check your email for further instructions and schedule your onboarding session within the next 7 days.',
       actions: [
 
-        { 
-          label: 'View Application', 
+        {
+          label: 'View Application',
           action: 'view',
           path: '/student/applications'
         }
@@ -55,13 +55,13 @@ const dummyStudentData = {
       read: true,
       details: 'Your supervisor has left some comments on your latest weekly report. They\'ve requested clarification on the tasks you completed last week. Please revise your report by Friday.',
       actions: [
-        { 
-          label: 'View Comments', 
+        {
+          label: 'View Comments',
           action: 'comments',
           path: '/student/reports'
         },
-        { 
-          label: 'Edit Report', 
+        {
+          label: 'Edit Report',
           action: 'edit',
           path: '/student/reports'
         }
@@ -76,13 +76,13 @@ const dummyStudentData = {
       read: true,
       details: 'The summer 2025 internship cycle is now open for applications. Over 150 companies have posted new positions. Based on your profile, we recommend checking out opportunities in software development and data analysis.',
       actions: [
-        { 
-          label: 'Browse Opportunities', 
+        {
+          label: 'Browse Opportunities',
           action: 'browse',
           path: '/student/internships'
         },
-        { 
-          label: 'Update Preferences', 
+        {
+          label: 'Update Preferences',
           action: 'preferences',
           path: '/student/profile'
         }
@@ -727,7 +727,7 @@ const NotificationModal = ({ notification, onClose, onAction }) => {
             <h3 className="text-xl font-bold text-gray-900">{notification.title}</h3>
             <p className="text-sm text-gray-500 mt-1">{notification.date}</p>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-500 focus:outline-none"
           >
@@ -736,22 +736,22 @@ const NotificationModal = ({ notification, onClose, onAction }) => {
             </svg>
           </button>
         </div>
-        
+
         {/* Content */}
         <div className="p-6">
           <p className="text-gray-600">{notification.details}</p>
         </div>
-        
+
         {/* Actions */}
         <div className="p-6 bg-gray-50 flex flex-wrap justify-end space-x-3">
-          <button 
+          <button
             onClick={onClose}
             className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded focus:outline-none"
           >
             Close
           </button>
           {notification.actions && notification.actions.map((action, index) => (
-            <button 
+            <button
               key={index}
               onClick={() => onAction(action)}
               className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded focus:outline-none"
@@ -766,14 +766,14 @@ const NotificationModal = ({ notification, onClose, onAction }) => {
 };
 
 // Modal component for changing major and semester
-const MajorSemesterModal = ({ 
-  isOpen, 
-  onClose, 
-  majors, 
-  semesters, 
-  currentMajorId, 
-  currentSemester, 
-  onSave 
+const MajorSemesterModal = ({
+  isOpen,
+  onClose,
+  majors,
+  semesters,
+  currentMajorId,
+  currentSemester,
+  onSave
 }) => {
   const [selectedMajorId, setSelectedMajorId] = useState(currentMajorId);
   const [selectedSemester, setSelectedSemester] = useState(currentSemester);
@@ -796,7 +796,7 @@ const MajorSemesterModal = ({
           <h3 className="text-xl font-bold text-gray-900">Update Major & Semester</h3>
           <p className="text-sm text-gray-500 mt-1">Select your major and current semester</p>
         </div>
-        
+
         {/* Content */}
         <div className="p-6 space-y-4">
           <div>
@@ -812,7 +812,7 @@ const MajorSemesterModal = ({
               ))}
             </select>
           </div>
-          
+
           <div>
             <label htmlFor="semester" className="block text-sm font-medium text-gray-700 mb-1">Semester</label>
             <select
@@ -827,16 +827,16 @@ const MajorSemesterModal = ({
             </select>
           </div>
         </div>
-        
+
         {/* Actions */}
         <div className="p-6 bg-gray-50 flex justify-end space-x-3">
-          <button 
+          <button
             onClick={onClose}
             className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded focus:outline-none"
           >
             Cancel
           </button>
-          <button 
+          <button
             onClick={() => onSave(selectedMajorId, selectedSemester)}
             className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded focus:outline-none"
           >
@@ -881,7 +881,7 @@ const Dashboard = () => {
   const handleMajorSemesterChange = (majorId, semester) => {
     // Find major name from id
     const majorName = majorsList.find(m => m.id === majorId)?.name || student.major;
-    
+
     // Update student data
     const updatedStudent = {
       ...student,
@@ -889,13 +889,13 @@ const Dashboard = () => {
       majorId: majorId,
       semester: semester
     };
-    
+
     setStudent(updatedStudent);
-    
+
     // Update suggested companies and internships based on new major
     setSuggestedCompanies(getCompaniesByMajor(majorId));
     setRecentInternships(getInternshipsByMajor(majorId));
-    
+
     // Close modal
     setMajorSemesterModalOpen(false);
   };
@@ -914,18 +914,18 @@ const Dashboard = () => {
 
   const handleNotificationClick = (notification) => {
     // Mark this notification as read
-    const updatedNotifications = student.notifications.map(n => 
+    const updatedNotifications = student.notifications.map(n =>
       n.id === notification.id ? { ...n, read: true } : n
     );
-    
+
     setStudent({
       ...student,
       notifications: updatedNotifications
     });
-    
+
     // Update unread count
     setUnreadNotifications(updatedNotifications.filter(n => !n.read).length);
-    
+
     // Show the notification modal
     setSelectedNotification(notification);
   };
@@ -938,7 +938,7 @@ const Dashboard = () => {
     console.log(`Action triggered: ${action.action}`);
     // Close the modal
     setSelectedNotification(null);
-    
+
     // Navigate to the corresponding page
     if (action.path) {
       navigate(action.path);
@@ -955,7 +955,7 @@ const Dashboard = () => {
               <h1 className="text-3xl font-bold">Welcome back, {student.name}</h1>
               <p className="mt-2">Student ID: {student.id} | {student.major}, Semester {student.semester}</p>
             </div>
-            <button 
+            <button
               onClick={() => setMajorSemesterModalOpen(true)}
               className="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-md text-white flex items-center"
             >
@@ -982,8 +982,8 @@ const Dashboard = () => {
                   <span className="text-sm font-medium text-gray-700">{Math.round((student.internshipHours / student.requiredHours) * 100)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5">
-                  <div 
-                    className="bg-blue-600 h-2.5 rounded-full" 
+                  <div
+                    className="bg-blue-600 h-2.5 rounded-full"
                     style={{ width: `${(student.internshipHours / student.requiredHours) * 100}%` }}
                   ></div>
                 </div>
@@ -996,8 +996,8 @@ const Dashboard = () => {
                   <span className="text-sm font-medium text-gray-700">{student.profileCompletion}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5">
-                  <div 
-                    className="bg-green-500 h-2.5 rounded-full" 
+                  <div
+                    className="bg-green-500 h-2.5 rounded-full"
                     style={{ width: `${student.profileCompletion}%` }}
                   ></div>
                 </div>
@@ -1068,7 +1068,7 @@ const Dashboard = () => {
                 )}
               </h2>
               {unreadNotifications > 0 && (
-                <button 
+                <button
                   onClick={markAllAsRead}
                   className="text-sm text-blue-600 hover:text-blue-800"
                 >
@@ -1079,8 +1079,8 @@ const Dashboard = () => {
             <div className="space-y-4">
               {student.notifications.length > 0 ? (
                 student.notifications.map((notification) => (
-                  <div 
-                    key={notification.id} 
+                  <div
+                    key={notification.id}
                     className={`p-3 rounded-md ${notification.read ? 'bg-gray-50' : 'bg-blue-50'} cursor-pointer hover:bg-gray-100 transition-colors duration-200`}
                     onClick={() => handleNotificationClick(notification)}
                   >
@@ -1128,26 +1128,26 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Links</h2>
             <div className="space-y-2">
-              <Link 
-                to="/student/applications" 
+              <Link
+                to="/student/applications"
                 className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
               >
                 My Applications
               </Link>
-              <Link 
-                to="/student/reports" 
+              <Link
+                to="/student/reports"
                 className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
               >
                 My Reports
               </Link>
-              <Link 
-                to="/student/internships" 
+              <Link
+                to="/student/internships"
                 className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
               >
                 Browse Internships
               </Link>
-              <Link 
-                to="/student/profile" 
+              <Link
+                to="/student/profile"
                 className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
               >
                 My Profile
@@ -1159,7 +1159,7 @@ const Dashboard = () => {
 
       {/* Notification Modal */}
       {selectedNotification && (
-        <NotificationModal 
+        <NotificationModal
           notification={selectedNotification}
           onClose={handleModalClose}
           onAction={handleNotificationAction}
