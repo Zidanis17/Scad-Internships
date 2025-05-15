@@ -31,6 +31,8 @@ import FacultyStatistics from 'pages/faculty/FacultyStatistics';
 import FacultyProfile from 'pages/faculty/FacultyProfile'
 import AutoEmailSender from './components/common/AutoEmailSender';
 import Internships from './pages/student/Internship';
+import WorkshopManagement from 'pages/scad/workShopManagement';
+
 
 
 
@@ -71,6 +73,7 @@ function App() {
           <Route path="/scadOffice/profile" element={<ScadProfile />} />
           <Route path="/scad/student-management" element={<StudentManagement />} />
           <Route path="/scad/statistics" element={<Statistics />} />
+          <Route path="/scad/workshops" element={<WorkshopManagement />} />
           <Route path="/scad/internships" element={<Internships />} />
           <Route path="/faculty/report-reviews" element={<FacultyReportReview />} />
           <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
