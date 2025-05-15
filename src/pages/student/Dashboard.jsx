@@ -2,11 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/common/Button';
 
+// Dummy data for majors and semesters
+const majorsList = [
+  { id: 1, name: 'Computer Science' },
+  { id: 2, name: 'Computer Engineering' },
+  { id: 3, name: 'Information Systems' },
+  { id: 4, name: 'Software Engineering' },
+  { id: 5, name: 'Electrical Engineering' },
+  { id: 6, name: 'Mechanical Engineering' },
+  { id: 7, name: 'Civil Engineering' },
+  { id: 8, name: 'Architecture' },
+  { id: 9, name: 'Business Administration' }
+];
+
+// Generate semesters 1-12
+const semestersList = Array.from({ length: 12 }, (_, i) => ({ id: i + 1, number: i + 1 }));
+
 // Dummy data for the student dashboard
 const dummyStudentData = {
   name: 'Ahmed Hassan',
   id: '41-12345',
   major: 'Computer Science',
+  majorId: 1,
   semester: 8,
   internshipHours: 180,
   requiredHours: 240,
@@ -74,71 +91,589 @@ const dummyStudentData = {
   ]
 };
 
-const dummySuggestedCompanies = [
-  {
-    id: 1,
-    name: 'Tech Solutions Inc.',
-    industry: 'Information Technology',
-    logo: '/companies/tech-solutions.png',
-    rating: 4.8,
-    recommendedBy: 27,
-    openPositions: 3
-  },
-  {
-    id: 2,
-    name: 'DataInsights Corp.',
-    industry: 'Data Analytics',
-    logo: '/companies/datainsights.png',
-    rating: 4.5,
-    recommendedBy: 15,
-    openPositions: 2
-  },
-  {
-    id: 3,
-    name: 'Creative Studios',
-    industry: 'Design',
-    logo: '/companies/creative-studios.png',
-    rating: 4.6,
-    recommendedBy: 12,
-    openPositions: 1
-  }
-];
+// Dummy data for companies by major
+const dummyCompaniesByMajor = {
+  1: [ // Computer Science
+    {
+      id: 1,
+      name: 'Tech Solutions Inc.',
+      industry: 'Information Technology',
+      logo: '/companies/tech-solutions.png',
+      rating: 4.8,
+      recommendedBy: 27,
+      openPositions: 3
+    },
+    {
+      id: 2,
+      name: 'DataInsights Corp.',
+      industry: 'Data Analytics',
+      logo: '/companies/datainsights.png',
+      rating: 4.5,
+      recommendedBy: 15,
+      openPositions: 2
+    },
+    {
+      id: 3,
+      name: 'Creative Studios',
+      industry: 'Design',
+      logo: '/companies/creative-studios.png',
+      rating: 4.6,
+      recommendedBy: 12,
+      openPositions: 1
+    }
+  ],
+  2: [ // Computer Engineering
+    {
+      id: 4,
+      name: 'Hardware Innovations',
+      industry: 'Hardware Engineering',
+      logo: '/companies/hardware-innovations.png',
+      rating: 4.7,
+      recommendedBy: 19,
+      openPositions: 2
+    },
+    {
+      id: 5,
+      name: 'Embedded Systems Co.',
+      industry: 'Embedded Systems',
+      logo: '/companies/embedded-systems.png',
+      rating: 4.3,
+      recommendedBy: 14,
+      openPositions: 3
+    },
+    {
+      id: 6,
+      name: 'Tech Solutions Inc.',
+      industry: 'Information Technology',
+      logo: '/companies/tech-solutions.png',
+      rating: 4.8,
+      recommendedBy: 22,
+      openPositions: 1
+    }
+  ],
+  3: [ // Information Systems
+    {
+      id: 7,
+      name: 'Business Intelligence Inc.',
+      industry: 'Business Intelligence',
+      logo: '/companies/business-intelligence.png',
+      rating: 4.4,
+      recommendedBy: 18,
+      openPositions: 4
+    },
+    {
+      id: 8,
+      name: 'Systems Integration Ltd.',
+      industry: 'IT Integration',
+      logo: '/companies/systems-integration.png',
+      rating: 4.2,
+      recommendedBy: 12,
+      openPositions: 2
+    },
+    {
+      id: 2,
+      name: 'DataInsights Corp.',
+      industry: 'Data Analytics',
+      logo: '/companies/datainsights.png',
+      rating: 4.5,
+      recommendedBy: 15,
+      openPositions: 3
+    }
+  ],
+  4: [ // Software Engineering
+    {
+      id: 1,
+      name: 'Tech Solutions Inc.',
+      industry: 'Information Technology',
+      logo: '/companies/tech-solutions.png',
+      rating: 4.8,
+      recommendedBy: 30,
+      openPositions: 5
+    },
+    {
+      id: 9,
+      name: 'App Development Labs',
+      industry: 'Mobile Development',
+      logo: '/companies/app-development.png',
+      rating: 4.6,
+      recommendedBy: 25,
+      openPositions: 3
+    },
+    {
+      id: 10,
+      name: 'Cloud Solutions',
+      industry: 'Cloud Computing',
+      logo: '/companies/cloud-solutions.png',
+      rating: 4.7,
+      recommendedBy: 22,
+      openPositions: 2
+    }
+  ],
+  5: [ // Electrical Engineering
+    {
+      id: 11,
+      name: 'Power Systems Co.',
+      industry: 'Power Engineering',
+      logo: '/companies/power-systems.png',
+      rating: 4.3,
+      recommendedBy: 16,
+      openPositions: 2
+    },
+    {
+      id: 12,
+      name: 'Electronics Manufacturing',
+      industry: 'Electronics',
+      logo: '/companies/electronics-manufacturing.png',
+      rating: 4.4,
+      recommendedBy: 14,
+      openPositions: 3
+    },
+    {
+      id: 13,
+      name: 'Telecommunications Ltd.',
+      industry: 'Telecommunications',
+      logo: '/companies/telecommunications.png',
+      rating: 4.5,
+      recommendedBy: 18,
+      openPositions: 1
+    }
+  ],
+  6: [ // Mechanical Engineering
+    {
+      id: 14,
+      name: 'Automotive Innovations',
+      industry: 'Automotive',
+      logo: '/companies/automotive-innovations.png',
+      rating: 4.6,
+      recommendedBy: 21,
+      openPositions: 3
+    },
+    {
+      id: 15,
+      name: 'Manufacturing Systems',
+      industry: 'Manufacturing',
+      logo: '/companies/manufacturing-systems.png',
+      rating: 4.2,
+      recommendedBy: 18,
+      openPositions: 2
+    },
+    {
+      id: 16,
+      name: 'Robotics Solutions',
+      industry: 'Robotics',
+      logo: '/companies/robotics-solutions.png',
+      rating: 4.7,
+      recommendedBy: 25,
+      openPositions: 4
+    }
+  ],
+  7: [ // Civil Engineering
+    {
+      id: 17,
+      name: 'Construction Partners',
+      industry: 'Construction',
+      logo: '/companies/construction-partners.png',
+      rating: 4.3,
+      recommendedBy: 17,
+      openPositions: 3
+    },
+    {
+      id: 18,
+      name: 'Urban Planning Group',
+      industry: 'Urban Planning',
+      logo: '/companies/urban-planning.png',
+      rating: 4.5,
+      recommendedBy: 14,
+      openPositions: 2
+    },
+    {
+      id: 19,
+      name: 'Infrastructure Solutions',
+      industry: 'Infrastructure',
+      logo: '/companies/infrastructure-solutions.png',
+      rating: 4.4,
+      recommendedBy: 20,
+      openPositions: 4
+    }
+  ],
+  8: [ // Architecture
+    {
+      id: 20,
+      name: 'Design Studio International',
+      industry: 'Architectural Design',
+      logo: '/companies/design-studio.png',
+      rating: 4.8,
+      recommendedBy: 24,
+      openPositions: 3
+    },
+    {
+      id: 21,
+      name: 'Urban Spaces',
+      industry: 'Urban Architecture',
+      logo: '/companies/urban-spaces.png',
+      rating: 4.6,
+      recommendedBy: 19,
+      openPositions: 2
+    },
+    {
+      id: 22,
+      name: 'Sustainable Buildings',
+      industry: 'Sustainable Architecture',
+      logo: '/companies/sustainable-buildings.png',
+      rating: 4.7,
+      recommendedBy: 23,
+      openPositions: 4
+    }
+  ],
+  9: [ // Business Administration
+    {
+      id: 23,
+      name: 'Global Consulting Group',
+      industry: 'Management Consulting',
+      logo: '/companies/global-consulting.png',
+      rating: 4.7,
+      recommendedBy: 26,
+      openPositions: 5
+    },
+    {
+      id: 24,
+      name: 'Financial Solutions Inc.',
+      industry: 'Finance',
+      logo: '/companies/financial-solutions.png',
+      rating: 4.5,
+      recommendedBy: 22,
+      openPositions: 3
+    },
+    {
+      id: 25,
+      name: 'Marketing Innovations',
+      industry: 'Marketing',
+      logo: '/companies/marketing-innovations.png',
+      rating: 4.6,
+      recommendedBy: 20,
+      openPositions: 4
+    }
+  ]
+};
 
-const dummyRecentInternships = [
-  {
-    id: 1,
-    title: 'Software Engineering Intern',
-    company: 'Tech Solutions Inc.',
-    industry: 'Information Technology',
-    duration: '3 months',
-    isPaid: true,
-    salary: '8000 EGP/month',
-    deadline: '2025-06-15',
-    postedAt: '3 days ago'
-  },
-  {
-    id: 2,
-    title: 'Data Analysis Intern',
-    company: 'DataInsights Corp.',
-    industry: 'Data Analytics',
-    duration: '4 months',
-    isPaid: true,
-    salary: '10000 EGP/month',
-    deadline: '2025-06-20',
-    postedAt: '5 days ago'
-  },
-  {
-    id: 3,
-    title: 'UX Research Intern',
-    company: 'Digital UX Lab',
-    industry: 'UX/UI Design',
-    duration: '3 months',
-    isPaid: true,
-    salary: '7500 EGP/month',
-    deadline: '2025-06-25',
-    postedAt: '1 week ago'
-  }
-];
+// Dummy data for internships by major
+const dummyInternshipsByMajor = {
+  1: [ // Computer Science
+    {
+      id: 1,
+      title: 'Software Engineering Intern',
+      company: 'Tech Solutions Inc.',
+      industry: 'Information Technology',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8000 EGP/month',
+      deadline: '2025-06-15',
+      postedAt: '3 days ago'
+    },
+    {
+      id: 2,
+      title: 'Data Analysis Intern',
+      company: 'DataInsights Corp.',
+      industry: 'Data Analytics',
+      duration: '4 months',
+      isPaid: true,
+      salary: '10000 EGP/month',
+      deadline: '2025-06-20',
+      postedAt: '5 days ago'
+    },
+    {
+      id: 3,
+      title: 'UX Research Intern',
+      company: 'Digital UX Lab',
+      industry: 'UX/UI Design',
+      duration: '3 months',
+      isPaid: true,
+      salary: '7500 EGP/month',
+      deadline: '2025-06-25',
+      postedAt: '1 week ago'
+    }
+  ],
+  2: [ // Computer Engineering
+    {
+      id: 4,
+      title: 'Hardware Design Intern',
+      company: 'Hardware Innovations',
+      industry: 'Hardware Engineering',
+      duration: '3 months',
+      isPaid: true,
+      salary: '9000 EGP/month',
+      deadline: '2025-06-18',
+      postedAt: '2 days ago'
+    },
+    {
+      id: 5,
+      title: 'Embedded Systems Intern',
+      company: 'Embedded Systems Co.',
+      industry: 'Embedded Systems',
+      duration: '4 months',
+      isPaid: true,
+      salary: '9500 EGP/month',
+      deadline: '2025-06-22',
+      postedAt: '4 days ago'
+    },
+    {
+      id: 6,
+      title: 'IoT Development Intern',
+      company: 'Connected Devices Ltd.',
+      industry: 'Internet of Things',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8500 EGP/month',
+      deadline: '2025-06-30',
+      postedAt: '1 week ago'
+    }
+  ],
+  3: [ // Information Systems
+    {
+      id: 7,
+      title: 'Business Analyst Intern',
+      company: 'Business Intelligence Inc.',
+      industry: 'Business Intelligence',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8000 EGP/month',
+      deadline: '2025-06-17',
+      postedAt: '3 days ago'
+    },
+    {
+      id: 8,
+      title: 'Systems Analyst Intern',
+      company: 'Systems Integration Ltd.',
+      industry: 'IT Integration',
+      duration: '4 months',
+      isPaid: true,
+      salary: '8500 EGP/month',
+      deadline: '2025-06-23',
+      postedAt: '5 days ago'
+    },
+    {
+      id: 9,
+      title: 'Data Management Intern',
+      company: 'DataInsights Corp.',
+      industry: 'Data Analytics',
+      duration: '3 months',
+      isPaid: true,
+      salary: '9000 EGP/month',
+      deadline: '2025-06-28',
+      postedAt: '1 week ago'
+    }
+  ],
+  4: [ // Software Engineering
+    {
+      id: 10,
+      title: 'Full Stack Developer Intern',
+      company: 'Tech Solutions Inc.',
+      industry: 'Information Technology',
+      duration: '3 months',
+      isPaid: true,
+      salary: '9500 EGP/month',
+      deadline: '2025-06-16',
+      postedAt: '2 days ago'
+    },
+    {
+      id: 11,
+      title: 'Mobile App Developer Intern',
+      company: 'App Development Labs',
+      industry: 'Mobile Development',
+      duration: '4 months',
+      isPaid: true,
+      salary: '10000 EGP/month',
+      deadline: '2025-06-21',
+      postedAt: '4 days ago'
+    },
+    {
+      id: 12,
+      title: 'Cloud Developer Intern',
+      company: 'Cloud Solutions',
+      industry: 'Cloud Computing',
+      duration: '3 months',
+      isPaid: true,
+      salary: '9000 EGP/month',
+      deadline: '2025-06-26',
+      postedAt: '1 week ago'
+    }
+  ],
+  5: [ // Electrical Engineering
+    {
+      id: 13,
+      title: 'Power Systems Intern',
+      company: 'Power Systems Co.',
+      industry: 'Power Engineering',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8500 EGP/month',
+      deadline: '2025-06-19',
+      postedAt: '3 days ago'
+    },
+    {
+      id: 14,
+      title: 'Electronics Design Intern',
+      company: 'Electronics Manufacturing',
+      industry: 'Electronics',
+      duration: '4 months',
+      isPaid: true,
+      salary: '9000 EGP/month',
+      deadline: '2025-06-24',
+      postedAt: '5 days ago'
+    },
+    {
+      id: 15,
+      title: 'Telecommunications Intern',
+      company: 'Telecommunications Ltd.',
+      industry: 'Telecommunications',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8000 EGP/month',
+      deadline: '2025-06-29',
+      postedAt: '1 week ago'
+    }
+  ],
+  6: [ // Mechanical Engineering
+    {
+      id: 16,
+      title: 'Automotive Design Intern',
+      company: 'Automotive Innovations',
+      industry: 'Automotive',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8800 EGP/month',
+      deadline: '2025-06-20',
+      postedAt: '2 days ago'
+    },
+    {
+      id: 17,
+      title: 'Manufacturing Process Intern',
+      company: 'Manufacturing Systems',
+      industry: 'Manufacturing',
+      duration: '4 months',
+      isPaid: true,
+      salary: '9200 EGP/month',
+      deadline: '2025-06-25',
+      postedAt: '4 days ago'
+    },
+    {
+      id: 18,
+      title: 'Robotics Engineering Intern',
+      company: 'Robotics Solutions',
+      industry: 'Robotics',
+      duration: '3 months',
+      isPaid: true,
+      salary: '9500 EGP/month',
+      deadline: '2025-07-02',
+      postedAt: '1 week ago'
+    }
+  ],
+  7: [ // Civil Engineering
+    {
+      id: 19,
+      title: 'Construction Management Intern',
+      company: 'Construction Partners',
+      industry: 'Construction',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8300 EGP/month',
+      deadline: '2025-06-18',
+      postedAt: '3 days ago'
+    },
+    {
+      id: 20,
+      title: 'Urban Planning Intern',
+      company: 'Urban Planning Group',
+      industry: 'Urban Planning',
+      duration: '4 months',
+      isPaid: true,
+      salary: '8700 EGP/month',
+      deadline: '2025-06-23',
+      postedAt: '5 days ago'
+    },
+    {
+      id: 21,
+      title: 'Infrastructure Engineering Intern',
+      company: 'Infrastructure Solutions',
+      industry: 'Infrastructure',
+      duration: '3 months',
+      isPaid: true,
+      salary: '9100 EGP/month',
+      deadline: '2025-06-28',
+      postedAt: '1 week ago'
+    }
+  ],
+  8: [ // Architecture
+    {
+      id: 22,
+      title: 'Architectural Design Intern',
+      company: 'Design Studio International',
+      industry: 'Architectural Design',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8600 EGP/month',
+      deadline: '2025-06-15',
+      postedAt: '2 days ago'
+    },
+    {
+      id: 23,
+      title: 'Urban Architecture Intern',
+      company: 'Urban Spaces',
+      industry: 'Urban Architecture',
+      duration: '4 months',
+      isPaid: true,
+      salary: '9000 EGP/month',
+      deadline: '2025-06-22',
+      postedAt: '4 days ago'
+    },
+    {
+      id: 24,
+      title: 'Sustainable Design Intern',
+      company: 'Sustainable Buildings',
+      industry: 'Sustainable Architecture',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8800 EGP/month',
+      deadline: '2025-06-27',
+      postedAt: '1 week ago'
+    }
+  ],
+  9: [ // Business Administration
+    {
+      id: 25,
+      title: 'Management Consulting Intern',
+      company: 'Global Consulting Group',
+      industry: 'Management Consulting',
+      duration: '3 months',
+      isPaid: true,
+      salary: '9200 EGP/month',
+      deadline: '2025-06-17',
+      postedAt: '3 days ago'
+    },
+    {
+      id: 26,
+      title: 'Financial Analysis Intern',
+      company: 'Financial Solutions Inc.',
+      industry: 'Finance',
+      duration: '4 months',
+      isPaid: true,
+      salary: '9500 EGP/month',
+      deadline: '2025-06-24',
+      postedAt: '5 days ago'
+    },
+    {
+      id: 27,
+      title: 'Marketing Strategy Intern',
+      company: 'Marketing Innovations',
+      industry: 'Marketing',
+      duration: '3 months',
+      isPaid: true,
+      salary: '8900 EGP/month',
+      deadline: '2025-06-29',
+      postedAt: '1 week ago'
+    }
+  ]
+};
 
 // Modal component for notification details
 const NotificationModal = ({ notification, onClose, onAction }) => {
@@ -230,25 +765,140 @@ const NotificationModal = ({ notification, onClose, onAction }) => {
   );
 };
 
+// Modal component for changing major and semester
+const MajorSemesterModal = ({ 
+  isOpen, 
+  onClose, 
+  majors, 
+  semesters, 
+  currentMajorId, 
+  currentSemester, 
+  onSave 
+}) => {
+  const [selectedMajorId, setSelectedMajorId] = useState(currentMajorId);
+  const [selectedSemester, setSelectedSemester] = useState(currentSemester);
+
+  useEffect(() => {
+    // Reset selections when modal opens
+    if (isOpen) {
+      setSelectedMajorId(currentMajorId);
+      setSelectedSemester(currentSemester);
+    }
+  }, [isOpen, currentMajorId, currentSemester]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-auto overflow-hidden animate-fade-in-up">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-xl font-bold text-gray-900">Update Major & Semester</h3>
+          <p className="text-sm text-gray-500 mt-1">Select your major and current semester</p>
+        </div>
+        
+        {/* Content */}
+        <div className="p-6 space-y-4">
+          <div>
+            <label htmlFor="major" className="block text-sm font-medium text-gray-700 mb-1">Major</label>
+            <select
+              id="major"
+              value={selectedMajorId}
+              onChange={(e) => setSelectedMajorId(Number(e.target.value))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              {majors.map((major) => (
+                <option key={major.id} value={major.id}>{major.name}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label htmlFor="semester" className="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+            <select
+              id="semester"
+              value={selectedSemester}
+              onChange={(e) => setSelectedSemester(Number(e.target.value))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              {semesters.map((semester) => (
+                <option key={semester.id} value={semester.number}>Semester {semester.number}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        
+        {/* Actions */}
+        <div className="p-6 bg-gray-50 flex justify-end space-x-3">
+          <button 
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded focus:outline-none"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={() => onSave(selectedMajorId, selectedSemester)}
+            className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded focus:outline-none"
+          >
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   const [student, setStudent] = useState(null);
   const [suggestedCompanies, setSuggestedCompanies] = useState([]);
   const [recentInternships, setRecentInternships] = useState([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [selectedNotification, setSelectedNotification] = useState(null);
+  const [majorSemesterModalOpen, setMajorSemesterModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Get companies and internships based on major ID
+  const getCompaniesByMajor = (majorId) => {
+    return dummyCompaniesByMajor[majorId] || dummyCompaniesByMajor[1]; // Default to CS if not found
+  };
+
+  const getInternshipsByMajor = (majorId) => {
+    return dummyInternshipsByMajor[majorId] || dummyInternshipsByMajor[1]; // Default to CS if not found
+  };
 
   useEffect(() => {
     // Simulate API calls with dummy data
     setStudent(dummyStudentData);
-    setSuggestedCompanies(dummySuggestedCompanies);
-    setRecentInternships(dummyRecentInternships);
+    setSuggestedCompanies(getCompaniesByMajor(dummyStudentData.majorId));
+    setRecentInternships(getInternshipsByMajor(dummyStudentData.majorId));
     setUnreadNotifications(dummyStudentData.notifications.filter(n => !n.read).length);
   }, []);
 
   if (!student) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
+
+  const handleMajorSemesterChange = (majorId, semester) => {
+    // Find major name from id
+    const majorName = majorsList.find(m => m.id === majorId)?.name || student.major;
+    
+    // Update student data
+    const updatedStudent = {
+      ...student,
+      major: majorName,
+      majorId: majorId,
+      semester: semester
+    };
+    
+    setStudent(updatedStudent);
+    
+    // Update suggested companies and internships based on new major
+    setSuggestedCompanies(getCompaniesByMajor(majorId));
+    setRecentInternships(getInternshipsByMajor(majorId));
+    
+    // Close modal
+    setMajorSemesterModalOpen(false);
+  };
 
   const markAllAsRead = () => {
     const updatedNotifications = student.notifications.map(notification => ({
@@ -300,8 +950,21 @@ const Dashboard = () => {
       {/* Header */}
       <div className="bg-blue-600 text-white p-6">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold">Welcome back, {student.name}</h1>
-          <p className="mt-2">Student ID: {student.id} | {student.major}, Semester {student.semester}</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold">Welcome back, {student.name}</h1>
+              <p className="mt-2">Student ID: {student.id} | {student.major}, Semester {student.semester}</p>
+            </div>
+            <button 
+              onClick={() => setMajorSemesterModalOpen(true)}
+              className="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-md text-white flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Change Major/Semester
+            </button>
+          </div>
         </div>
       </div>
 
@@ -352,7 +1015,7 @@ const Dashboard = () => {
           {/* Recent Internships */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Recent Internships</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Recent Internships for {student.major}</h2>
               <Link to="/student/internships" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                 View All
               </Link>
@@ -502,6 +1165,17 @@ const Dashboard = () => {
           onAction={handleNotificationAction}
         />
       )}
+
+      {/* Major/Semester Selection Modal */}
+      <MajorSemesterModal
+        isOpen={majorSemesterModalOpen}
+        onClose={() => setMajorSemesterModalOpen(false)}
+        majors={majorsList}
+        semesters={semestersList}
+        currentMajorId={student.majorId}
+        currentSemester={student.semester}
+        onSave={handleMajorSemesterChange}
+      />
     </div>
   );
 };
