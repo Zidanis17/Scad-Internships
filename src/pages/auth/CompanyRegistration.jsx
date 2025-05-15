@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import emailjs from 'emailjs-com';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+
 // Company size options
 const companySizes = [
   { value: 'small', label: 'Small (50 employees or less)' },
@@ -9,6 +11,11 @@ const companySizes = [
   { value: 'large', label: 'Large (101-500 employees)' },
   { value: 'corporate', label: 'Corporate (more than 500 employees)' },
 ];
+
+// Replace these with your EmailJS credentials
+const EMAILJS_USER_ID = 'xgaCI-VQn7vcGdf6t';
+const EMAILJS_SERVICE_ID = 'service_mg5s3up';
+const EMAILJS_TEMPLATE_ID = 'template_smfi2yr';
 
 const CompanyRegistration = () => {
   const [formData, setFormData] = useState({
@@ -34,15 +41,29 @@ const CompanyRegistration = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Basic validation
+    // Check if all fields are filled
     if (!formData.name || !formData.industry || !formData.size || !formData.email || !formData.documents) {
       setError('All fields are required');
       return;
     }
-    // Dummy submission logic
-    console.log('Company registration submitted:', formData);
-    // Redirect to login or dashboard
-    navigate('/');
+
+    // Set up email details
+    const templateParams = {
+      to_email: formData.email,
+      company_name: formData.name,
+    };
+
+    // Send the email automatically with EmailJS
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_USER_ID)
+      .then((response) => {
+        console.log('Email shipped successfully:', response.status, response.text);
+        // Take them straight to login after sending
+        navigate('/');
+      })
+      .catch((err) => {
+        console.error('Email failed to ship:', err);
+        setError('Something went wrong sending the email. Try again.');
+      });
   };
 
   return (

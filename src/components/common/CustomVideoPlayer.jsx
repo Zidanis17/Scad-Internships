@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-const CustomVideoPlayer = ({ videoId }) => {
+const CustomVideoPlayer = ({ videoId, isLive }) => {
   const [playerVisible, setPlayerVisible] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const iframeRef = useRef(null);
@@ -10,7 +10,6 @@ const CustomVideoPlayer = ({ videoId }) => {
     setVideoPlaying(true);
     
     if (iframeRef.current) {
-      // For an already loaded iframe, send a postMessage to play
       try {
         iframeRef.current.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
       } catch (e) {
@@ -59,7 +58,7 @@ const CustomVideoPlayer = ({ videoId }) => {
           <iframe
             ref={iframeRef}
             className="w-full h-full"
-            src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&autoplay=1`}
+            src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&controls=${isLive ? 0 : 1}&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&autoplay=1`}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -67,26 +66,28 @@ const CustomVideoPlayer = ({ videoId }) => {
           ></iframe>
         )}
       </div>
-      <div className="flex justify-between mt-2">
-        <button 
-          onClick={handlePlay}
-          className={`px-4 py-2 rounded ${videoPlaying ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'}`}
-        >
-          Play
-        </button>
-        <button 
-          onClick={handlePause}
-          className={`px-4 py-2 rounded ${!videoPlaying && playerVisible ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'}`}
-        >
-          Pause
-        </button>
-        <button 
-          onClick={handleStop}
-          className="px-4 py-2 rounded bg-gray-600 text-white"
-        >
-          Stop
-        </button>
-      </div>
+      {isLive && (
+        <div className="flex justify-between mt-2">
+          <button 
+            onClick={handlePlay}
+            className={`px-4 py-2 rounded ${videoPlaying ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'}`}
+          >
+            Play
+          </button>
+          <button 
+            onClick={handlePause}
+            className={`px-4 py-2 rounded ${!videoPlaying && playerVisible ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'}`}
+          >
+            Pause
+          </button>
+          <button 
+            onClick={handleStop}
+            className="px-4 py-2 rounded bg-gray-600 text-white"
+          >
+            Stop
+          </button>
+        </div>
+      )}
     </div>
   );
 };

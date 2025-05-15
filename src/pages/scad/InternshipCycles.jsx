@@ -66,7 +66,6 @@ const InternshipCycles = () => {
 
   const handleSaveCycle = () => {
     if (!formData.name || !formData.startDate || !formData.endDate) {
-      alert('Please fill in all required fields.');
       return;
     }
     if (formData.id) {
@@ -81,7 +80,6 @@ const InternshipCycles = () => {
       setCycles([...cycles, { ...formData, id: cycles.length + 1, applicationsCount: 0 }]);
     }
     setIsModalOpen(false);
-    alert(formData.id ? 'Cycle updated!' : 'Cycle created!');
   };
 
   if (isLoading) {

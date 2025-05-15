@@ -29,6 +29,7 @@ import FacultyReportReview from 'pages/faculty/ReportReviews'
 import FacultyDashboard from 'pages/faculty/FacultyDashboard';
 import FacultyStatistics from 'pages/faculty/FacultyStatistics';
 import FacultyProfile from 'pages/faculty/FacultyProfile'
+import AutoEmailSender from './components/common/AutoEmailSender';
 
 
 
@@ -63,6 +64,8 @@ function App() {
           <Route path="/scad/dashboard" element={<ScadDashboard />} />
           <Route path="/scad/company-applications" element={<CompanyApplicationsScad />} />
           <Route path="/scad/internship-cycles" element={<InternshipCycles />} />
+          <Route path="/scad/report-reviews" element={<FacultyReportReview />} />
+          <Route path="/scad/career-guidance" element={<CareerGuidance />} />
           <Route path="/scadOffice/profile" element={<ScadProfile />} />
           <Route path="/scad/student-management" element={<StudentManagement />} />
           <Route path="/scad/statistics" element={<Statistics />} />
@@ -70,6 +73,7 @@ function App() {
           <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
           <Route path="/faculty/faculty-statistics" element={<FacultyStatistics />} />
           <Route path="/faculty/profile" element={<FacultyProfile />} />
+          <Route path="/auto-email-sender" element={<AutoEmailSender />} />
 
         </Routes>
       </Router>

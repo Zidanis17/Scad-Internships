@@ -712,7 +712,7 @@ const ReportReviews = () => {
       <Modal
         isOpen={isEvaluationModalOpen}
         onClose={() => setIsEvaluationModalOpen(false)}
-        title="Company Evaluation Details"
+        title="Company Evaluation Report"
         footer={
           <Button variant="secondary" onClick={() => setIsEvaluationModalOpen(false)}>
             Close

@@ -4,7 +4,7 @@ import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
 import CustomVideoPlayer from '../../components/common/CustomVideoPlayer';
 
-// Dummy workshop data
+// Dummy workshop data with an additional recorded workshop
 const dummyWorkshops = [
   {
     id: 1,
@@ -15,7 +15,8 @@ const dummyWorkshops = [
     time: '10:00 AM - 12:00 PM',
     speaker: 'John Doe',
     isLive: true,
-    registered: true
+    registered: true,
+    videoId: 'OA4JhdNf-DA'
   },
   {
     id: 2,
@@ -26,7 +27,20 @@ const dummyWorkshops = [
     time: '2:00 PM - 4:00 PM',
     speaker: 'Jane Smith',
     isLive: false,
-    registered: false
+    registered: false,
+    videoId: 'dQw4w9WgXcQ'
+  },
+  {
+    id: 3,
+    name: 'Introduction to Machine Learning',
+    description: 'Get started with the basics of machine learning and its applications.',
+    startDate: '2025-05-25',
+    endDate: '2025-05-25',
+    time: '1:00 PM - 3:00 PM',
+    speaker: 'Emily Johnson',
+    isLive: false,
+    registered: true,
+    videoId: 'xyz789video'
   }
 ];
 
@@ -36,6 +50,7 @@ const Workshops = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
   const [isLiveModalOpen, setIsLiveModalOpen] = useState(false);
+  const [isLiveWorkshop, setIsLiveWorkshop] = useState(false);
   const [notes, setNotes] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -63,11 +78,18 @@ const Workshops = () => {
 
   const handleJoinLive = (workshop) => {
     setSelectedWorkshop(workshop);
+    setIsLiveWorkshop(true);
     setIsLiveModalOpen(true);
     setChatMessages([
       { id: 1, user: 'Alice', message: 'Excited for this workshop!', timestamp: '10:01 AM' },
       { id: 2, user: 'Bob', message: 'Me too!', timestamp: '10:02 AM' }
     ]);
+  };
+
+  const handleWatch = (workshop) => {
+    setSelectedWorkshop(workshop);
+    setIsLiveWorkshop(false);
+    setIsLiveModalOpen(true);
   };
 
   const handleSendMessage = () => {
@@ -82,9 +104,7 @@ const Workshops = () => {
   };
 
   const handleSubmitFeedback = () => {
-    if (rating === 0) {
-      return;
-    }
+    if (rating === 0) return;
     // Simulate feedback submission
     setIsLiveModalOpen(false);
     setRating(0);
@@ -136,20 +156,19 @@ const Workshops = () => {
                 <div className="mt-4">
                   {workshop.registered ? (
                     <>
-                      {workshop.isLive && (
+                      {workshop.isLive ? (
                         <Button
-                          onClick={() => handleJoinLive(workshop)}
+                          onClick={() => handleWatch(workshop)}
                           className="bg-blue-600 text-white hover:bg-blue-700 w-full"
                         >
                           Join Live
                         </Button>
-                      )}
-                      {!workshop.isLive && (
+                      ) : (
                         <Button
-                          onClick={() => handleDownloadCertificate(workshop)}
+                          onClick={() => handleJoinLive(workshop)}
                           className="bg-green-600 text-white hover:bg-green-700 w-full"
                         >
-                          Download Certificate
+                          Watch
                         </Button>
                       )}
                     </>
@@ -198,7 +217,7 @@ const Workshops = () => {
         </div>
       </Modal>
 
-      {/* Live Workshop Modal */}
+      {/* Workshop Modal */}
       <Modal
         isOpen={isLiveModalOpen}
         onClose={() => setIsLiveModalOpen(false)}
@@ -208,7 +227,7 @@ const Workshops = () => {
         <div className="space-y-4">
           <div className="flex space-x-4">
             <div className="flex-1">
-              <CustomVideoPlayer videoId="OA4JhdNf-DA" />
+              <CustomVideoPlayer videoId={selectedWorkshop?.videoId} isLive={isLiveWorkshop} />
             </div>
             <div className="w-1/3">
               <h4 className="font-semibold mb-2">Chat</h4>

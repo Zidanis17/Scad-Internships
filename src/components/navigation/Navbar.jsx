@@ -9,7 +9,7 @@ const Navbar = () => {
   const { userRole } = useContext(AuthContext);
   
   // Check if we're on the login page
-  const isLoginPage = location.pathname === '/login' || location.pathname === '/';
+  const isLoginPage = location.pathname === '/login' || location.pathname === '/' || location.pathname === '/register-company';
   
   // Close mobile menu when navigating
   useEffect(() => {
@@ -60,6 +60,8 @@ const Navbar = () => {
           { name: 'Internship Cycles', path: '/scad/internship-cycles' },
           { name: 'Report Reviews', path: '/faculty/report-reviews' },
           { name: 'Statistics', path: '/scad/statistics' },
+          { name: 'Student Management', path: '/scad/student-management'},
+          { name: 'Career Guidance', path: '/scad/career-guidance' },
         ];
       default:
         return [];

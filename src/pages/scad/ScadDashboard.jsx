@@ -216,7 +216,7 @@ const ScadDashboard = () => {
             ))}
           </div>
           <Link
-            to="/scad/report-management"
+            to="/scad/report-reviews"
             className="text-blue-600 hover:text-blue-800 text-sm mt-4 block"
           >
             View All Reports
