@@ -3,6 +3,7 @@ import InternshipList from '../../components/internship/InternshipList';
 import Modal from '../../components/common/Modal';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
+import { useToast } from '../../components/common/ToastContext';
 
 // Dummy internship data
 const dummyInternships = [
@@ -45,8 +46,8 @@ const dummyInternships = [
     deadline: '2025-06-25',
     postedAt: '2025-05-05'
   },
-    {
-    id: 3,
+  {
+    id: 4,
     jobTitle: 'Business',
     companyName: 'Business boy',
     industry: 'Businessing',
@@ -67,6 +68,7 @@ const Internships = () => {
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
+  const { success } = useToast();
 
   useEffect(() => {
     setInternships(dummyInternships);
@@ -101,7 +103,7 @@ const Internships = () => {
       cv: formData.get('cv')
     });
     setIsApplicationModalOpen(false);
-    alert('Application submitted successfully!');
+    success('Application submitted successfully!');
   };
 
   return (

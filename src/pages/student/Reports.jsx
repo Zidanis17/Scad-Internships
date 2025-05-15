@@ -4,32 +4,22 @@ import ReportForm from '../../components/report/ReportForm';
 import Modal from '../../components/common/Modal';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
+import { useToast } from '../../components/common/ToastContext';
 
 const Reports = () => {
-  // State for reports list
   const [reports, setReports] = useState([]);
-  // State for filtered reports
   const [filteredReports, setFilteredReports] = useState([]);
-  // State for search term
   const [searchTerm, setSearchTerm] = useState('');
-  // State for status filter
   const [statusFilter, setStatusFilter] = useState('all');
-  // State for modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // State for view report modal
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  // State for current report
   const [currentReport, setCurrentReport] = useState(null);
-  // State for loading status
   const [isLoading, setIsLoading] = useState(true);
-  // State for appeal modal
   const [isAppealModalOpen, setIsAppealModalOpen] = useState(false);
-  // State for appeal message
   const [appealMessage, setAppealMessage] = useState('');
-  // State for print mode
   const [isPrintMode, setIsPrintMode] = useState(false);
+  const { success } = useToast();
 
-  // Mock data for initial reports
   const mockReports = [
     {
       id: 1,
@@ -70,9 +60,7 @@ const Reports = () => {
     }
   ];
 
-  // Fetch reports data
   useEffect(() => {
-    // Simulate API call
     setTimeout(() => {
       setReports(mockReports);
       setFilteredReports(mockReports);
@@ -80,11 +68,9 @@ const Reports = () => {
     }, 1000);
   }, []);
 
-  // Filter reports based on search term and status
   useEffect(() => {
     let results = reports;
     
-    // Filter by search term
     if (searchTerm) {
       results = results.filter(report => 
         report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,7 +79,6 @@ const Reports = () => {
       );
     }
     
-    // Filter by status
     if (statusFilter !== 'all') {
       results = results.filter(report => report.status === statusFilter);
     }
@@ -101,41 +86,35 @@ const Reports = () => {
     setFilteredReports(results);
   }, [searchTerm, statusFilter, reports]);
 
-  // Handle creating new report
   const handleCreateReport = () => {
     setCurrentReport(null);
     setIsModalOpen(true);
   };
 
-  // Handle view report details
   const handleViewReport = (reportId) => {
     const report = reports.find(r => r.id === reportId);
     setCurrentReport(report);
     setIsViewModalOpen(true);
   };
 
-  // Handle edit report
   const handleEditReport = (reportId) => {
     const report = reports.find(r => r.id === reportId);
     setCurrentReport(report);
     setIsModalOpen(true);
   };
 
-  // Handle submit report form
   const handleSubmitReport = (formData) => {
     if (currentReport) {
-      // Update existing report
       const updatedReports = reports.map(report => 
         report.id === currentReport.id ? { ...report, ...formData } : report
       );
       setReports(updatedReports);
     } else {
-      // Create new report
       const newReport = {
         id: reports.length + 1,
         ...formData,
-        companyName: formData.companyName || "Company Name", // Add default values
-        jobTitle: formData.jobTitle || "Job Title",          // Add default values
+        companyName: formData.companyName || "Company Name",
+        jobTitle: formData.jobTitle || "Job Title",
         submissionDate: new Date().toISOString().split('T')[0],
         status: 'pending'
       };
@@ -144,11 +123,9 @@ const Reports = () => {
     setIsModalOpen(false);
   };
 
-  // Handle appeal submission
   const handleAppealSubmit = () => {
     if (!appealMessage.trim()) return;
     
-    // Update the report with appeal information
     const updatedReports = reports.map(report => 
       report.id === currentReport.id ? 
       { ...report, appealMessage, appealDate: new Date().toISOString().split('T')[0] } : 
@@ -158,34 +135,27 @@ const Reports = () => {
     setIsAppealModalOpen(false);
     setAppealMessage('');
     
-    // Show feedback to user (in a real app, this would be a toast notification or alert)
-    alert("Appeal submitted successfully");
+    success("Appeal submitted successfully");
   };
 
-  // Handle initiating an appeal
   const handleAppeal = () => {
     setIsViewModalOpen(false);
     setIsAppealModalOpen(true);
   };
 
-  // Handle print PDF
   const handlePrintPDF = (reportId) => {
-    // Find the report to print
     const reportToPrint = reports.find(r => r.id === reportId);
     setCurrentReport(reportToPrint);
     setIsPrintMode(true);
     
-    // Use setTimeout to allow the modal to render before printing
     setTimeout(() => {
       window.print();
-      // Reset print mode after printing
       setTimeout(() => {
         setIsPrintMode(false);
       }, 500);
     }, 100);
   };
 
-  // Get status display class based on status
   const getStatusClass = (status) => {
     switch (status) {
       case 'accepted':
@@ -200,14 +170,12 @@ const Reports = () => {
     }
   };
 
-  // Format status text to be displayed
   const formatStatusText = (status) => {
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
   return (
     <div className="bg-gray-50 min-h-screen pb-8">
-      {/* Header */}
       <div className="bg-blue-600 text-white p-6">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-bold">My Internship Reports</h1>
@@ -215,9 +183,7 @@ const Reports = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 mt-8">
-        {/* Controls */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
@@ -265,7 +231,6 @@ const Reports = () => {
           </div>
         </div>
 
-        {/* Reports Grid */}
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-gray-500">Loading reports...</p>
@@ -293,7 +258,6 @@ const Reports = () => {
                   <p className="text-gray-700 mb-4 line-clamp-3">
                     {report.introduction}
                   </p>
-                  
 
                   <div className="mt-4 grid grid-cols-2 gap-2">
                     <Button 
@@ -357,7 +321,6 @@ const Reports = () => {
         )}
       </div>
 
-      {/* Create/Edit Report Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -365,11 +328,10 @@ const Reports = () => {
       >
         <ReportForm
           onSubmit={handleSubmitReport}
-          initialData={currentReport || {}} // Provide empty object as fallback
+          initialData={currentReport || {}}
         />
       </Modal>
 
-      {/* View Report Modal */}
       <Modal
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
@@ -446,7 +408,6 @@ const Reports = () => {
         )}
       </Modal>
 
-      {/* Appeal Modal */}
       <Modal
         isOpen={isAppealModalOpen}
         onClose={() => setIsAppealModalOpen(false)}
@@ -473,7 +434,6 @@ const Reports = () => {
         </div>
       </Modal>
 
-      {/* Print-only styles */}
       <style jsx global>{`
         @media print {
           body * {
@@ -491,7 +451,6 @@ const Reports = () => {
         }
       `}</style>
 
-      {/* Hidden Print Report Modal - Only shown when printing */}
       {isPrintMode && currentReport && (
         <div className="print-content">
           <div className="p-8">

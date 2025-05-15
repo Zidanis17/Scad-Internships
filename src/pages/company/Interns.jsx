@@ -5,6 +5,8 @@ import Modal from '../../components/common/Modal';
 import EvaluationForm from '../../components/evaluation/EvaluationForm';
 
 // Dummy data for interns with sample evaluation data
+const companyName = "Tech Solutions Inc.";
+
 const dummyInterns = [
   {
     id: 1,
@@ -116,6 +118,7 @@ const Interns = () => {
   const [selectedIntern, setSelectedIntern] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
 
   useEffect(() => {
     // Simulate API call
@@ -196,6 +199,34 @@ const Interns = () => {
       )
     );
     setShowEvaluationModal(false);
+    setSelectedIntern(null);
+  };
+
+  // New functions for deleting evaluations
+  const handleOpenDeleteConfirm = () => {
+    setShowDeleteConfirmModal(true);
+    setShowEvaluationModal(false); // Close the evaluation modal
+  };
+
+  const handleCloseDeleteConfirm = () => {
+    setShowDeleteConfirmModal(false);
+    if (selectedIntern) {
+      setShowEvaluationModal(true); // Reopen the evaluation modal if needed
+    }
+  };
+
+  const handleDeleteEvaluation = () => {
+    if (!selectedIntern) return;
+
+    setInterns(prevInterns => 
+      prevInterns.map(intern => 
+        intern.id === selectedIntern.id 
+          ? { ...intern, evaluated: false, evaluation: null } 
+          : intern
+      )
+    );
+    
+    setShowDeleteConfirmModal(false);
     setSelectedIntern(null);
   };
 
@@ -486,6 +517,24 @@ const Interns = () => {
     );
   };
 
+  // Modified EvaluationForm view to include Delete button
+   const renderEvaluationContent = () => {
+    if (!selectedIntern) return null;
+
+    // Set up a global handler for the delete button in the evaluation form
+    window.onDeleteEvaluation = handleOpenDeleteConfirm;
+
+    return (
+      <div>
+        <EvaluationForm 
+          onSubmit={handleSubmitEvaluation}
+          initialData={selectedIntern.evaluation || {companyName: companyName}}
+          evaluationType='Student'
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen pb-8">
       <div className="bg-indigo-700 text-white p-6">
@@ -557,11 +606,7 @@ const Interns = () => {
           onClose={handleCloseEvaluation}
           title={selectedIntern.evaluated ? "Intern Evaluation" : "Evaluate Intern"}
         >
-          <EvaluationForm 
-            onSubmit={handleSubmitEvaluation}
-            initialData={selectedIntern.evaluation || {}}
-            evaluationType='Student'
-          />
+          {renderEvaluationContent()}
         </Modal>
       )}
 
@@ -573,6 +618,44 @@ const Interns = () => {
           size="xl"
         >
           {renderDetailsContent()}
+        </Modal>
+      )}
+
+      {/* Confirmation Modal for Deleting Evaluations */}
+      {showDeleteConfirmModal && selectedIntern && (
+        <Modal
+          isOpen={showDeleteConfirmModal}
+          onClose={handleCloseDeleteConfirm}
+          title="Confirm Delete Evaluation"
+          size="md"
+        >
+          <div className="p-4">
+            <div className="mb-6 text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">Delete Evaluation</h3>
+              <p className="text-gray-500 mt-2">
+                Are you sure you want to delete the evaluation for {selectedIntern.name}? This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button
+                className="bg-gray-200 text-gray-800 hover:bg-gray-300"
+                onClick={handleCloseDeleteConfirm}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-red-600 text-white hover:bg-red-700 gap-3"
+                onClick={handleDeleteEvaluation}
+              >
+                Delete Evaluation
+              </Button>
+            </div>
+          </div>
         </Modal>
       )}
     </div>

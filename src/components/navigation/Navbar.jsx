@@ -51,12 +51,14 @@ const Navbar = () => {
         return [
           { name: 'Dashboard', path: '/faculty/dashboard' },
           { name: 'Report Reviews', path: '/faculty/report-reviews' },
+          {name: 'Statistics', path:'/faculty/faculty-statistics'}
         ];
       case 'scadOffice':
         return [
           { name: 'Dashboard', path: '/scad/dashboard' },
           { name: 'Company Applications', path: '/scad/company-applications' },
           { name: 'Internship Cycles', path: '/scad/internship-cycles' },
+          { name: 'Report Reviews', path: '/faculty/report-reviews' },
           { name: 'Statistics', path: '/scad/statistics' },
         ];
       default:
@@ -180,6 +182,19 @@ const Navbar = () => {
                         return (
                           <>
                             <Link to="/scadOffice/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Your Profile
+                            </Link>
+                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Sign out
+                            </Link>
+                          </>
+                        );
+                      }
+                      
+                      if (userRole === 'faculty') {
+                        return (
+                          <>
+                            <Link to="/faculty/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Your Profile
                             </Link>
                             <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">

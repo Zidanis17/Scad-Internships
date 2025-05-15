@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../../components/common/Button';
+import { useToast } from '../../components/common/ToastContext';
 
 // Dummy data with uploadedDocuments field
 const dummyApplications = [
@@ -30,7 +31,6 @@ const dummyApplications = [
     documents: ['CV.pdf', 'Portfolio.pdf'],
     uploadedDocuments: []
   },
-
 ];
 
 const Applications = () => {
@@ -38,6 +38,7 @@ const Applications = () => {
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadMessage, setUploadMessage] = useState('');
+  const { success, error } = useToast();
 
   // Load dummy data on mount
   useEffect(() => {
@@ -59,6 +60,7 @@ const Applications = () => {
   const handleUploadDocuments = (applicationId, files) => {
     if (files.length === 0) {
       setUploadMessage('No files selected');
+      error('No files selected');
       setTimeout(() => setUploadMessage(''), 3000);
       return;
     }
@@ -71,7 +73,23 @@ const Applications = () => {
       )
     );
     setUploadMessage('Documents uploaded successfully');
+    success('Documents uploaded successfully');
     setTimeout(() => setUploadMessage(''), 3000);
+  };
+
+  // Handle removing a document
+  const handleRemoveDocument = (applicationId, documentName) => {
+    setApplications(prevApplications =>
+      prevApplications.map(app =>
+        app.id === applicationId
+          ? {
+              ...app,
+              uploadedDocuments: app.uploadedDocuments.filter(doc => doc !== documentName)
+            }
+          : app
+      )
+    );
+    success(`Document "${documentName}" removed successfully`);
   };
 
   return (
@@ -181,7 +199,15 @@ const Applications = () => {
                     {selectedApplication.uploadedDocuments && selectedApplication.uploadedDocuments.length > 0 ? (
                       <ul className="list-disc ml-5 mt-1 text-gray-600">
                         {selectedApplication.uploadedDocuments.map((doc, index) => (
-                          <li key={index}>{doc}</li>
+                          <li key={index} className="flex items-center justify-between">
+                            <span>{doc}</span>
+                            <Button
+                              onClick={() => handleRemoveDocument(selectedApplication.id, doc)}
+                              className="bg-red-500 text-white hover:bg-red-600 text-xs py-1 px-2 ml-2"
+                            >
+                              Remove
+                            </Button>
+                          </li>
                         ))}
                       </ul>
                     ) : (
