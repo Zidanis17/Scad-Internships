@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate  } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
 import InternshipForm from '../../components/internship/InternshipForm';
 import EvaluationForm from '../../components/evaluation/EvaluationForm';
+import { useToast } from '../../components/common/ToastContext';
 
 // Dummy data for the company dashboard
-
 const dummyCompanyData = {
   name: 'Tech Solutions Inc.',
   id: 'COMP-5678',
@@ -261,8 +261,8 @@ const NotificationModal = ({ notification, onClose, onAction }) => {
   );
 };
 
-
 const Dashboard = () => {
+  const { success } = useToast();
   const [company, setCompany] = useState(null);
   const [internshipPosts, setInternshipPosts] = useState([]);
   const [currentInterns, setCurrentInterns] = useState([]);
@@ -334,13 +334,11 @@ const Dashboard = () => {
     }
   };
 
-
-  
   const handleModalClose = () => {
     setSelectedNotification(null);
   };
 
-    const handleNotificationClick = (notification) => {
+  const handleNotificationClick = (notification) => {
     // Mark this notification as read
     const updatedNotifications = company.notifications.map(n => 
       n.id === notification.id ? { ...n, read: true } : n
@@ -390,7 +388,62 @@ const Dashboard = () => {
     setIsFormModalOpen(true);
   };
 
-  
+  const handleAcceptIntern = (applicationId) => {
+    // Find the application
+    const application = recentApplications.find(app => app.id === applicationId);
+    if (!application) return;
+
+    // Remove application from recentApplications
+    const updatedApplications = recentApplications.filter(app => app.id !== applicationId);
+    setRecentApplications(updatedApplications);
+
+    // Find the corresponding internship post to get skills and duration
+    const internshipPost = internshipPosts.find(post => post.title === application.position);
+    
+    // Calculate start and end dates
+    const startDate = new Date().toISOString().split('T')[0]; // Today
+    const durationMonths = internshipPost?.duration
+      ? parseInt(internshipPost.duration.split(' ')[0]) || 3
+      : 3; // Default to 3 months if not found
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + durationMonths);
+    const formattedEndDate = endDate.toISOString().split('T')[0];
+
+    // Create new intern
+    const newIntern = {
+      id: Math.max(...currentInterns.map(intern => intern.id), 0) + 1, // Generate new ID
+      name: application.studentName,
+      major: application.major,
+      position: application.position,
+      startDate,
+      endDate: formattedEndDate,
+      progress: 0,
+      skills: internshipPost?.skillsRequired || [], // Use post skills or empty array
+      supervisor: 'TBD', // Default supervisor
+      status: 'current',
+      evaluated: false,
+      contactEmail: `${application.studentName.toLowerCase().replace(/\s+/g, '.')}@student.guc.edu.eg`, // Mock email
+      phone: 'N/A' // Default phone
+    };
+
+    // Add to current interns
+    setCurrentInterns([...currentInterns, newIntern]);
+
+    // Mark related notification as read (if exists)
+    const relatedNotification = company.notifications.find(n =>
+      n.type === 'application' && n.message.includes(application.studentName)
+    );
+    if (relatedNotification) {
+      const updatedNotifications = company.notifications.map(n =>
+        n.id === relatedNotification.id ? { ...n, read: true } : n
+      );
+      setCompany({ ...company, notifications: updatedNotifications });
+      setUnreadNotifications(updatedNotifications.filter(n => !n.read).length);
+    }
+
+    // Show success toast
+    success(`${application.studentName} has been accepted as a current intern!`);
+  };
 
   const handleSubmitPost = (postData) => {
     const { jobTitle, skills, ...rest } = postData;
@@ -595,7 +648,7 @@ const Dashboard = () => {
             </div>
             <div className="mt-6">
               <Button 
-                className="bg-indigo-600 text-white hover:bg-indigo-700 w-full"
+                className="bg-indigo-600 text-white hover:bg-indigo- rustic text-sm font-medium py-1"
                 onClick={handleCreatePost}
               >
                 Create New Internship Post
@@ -673,8 +726,7 @@ const Dashboard = () => {
 
         {/* Right Column */}
         <div className="space-y-8">
-
-        {/* Notifications */}
+          {/* Notifications */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">
@@ -748,12 +800,20 @@ const Dashboard = () => {
                         {application.status}
                       </span>
                     </div>
-                    <div className="mt-3">
+                    <div className="mt-3 flex space-x-2">
                       <Link to={`/company/applications/${application.id}`}>
                         <Button className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm py-1">
                           Review Application
                         </Button>
                       </Link>
+                      { (
+                        <Button 
+                          className="bg-green-600 text-white hover:bg-green-700 text-sm py-1"
+                          onClick={() => handleAcceptIntern(application.id)}
+                        >
+                          Accept Intern
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
