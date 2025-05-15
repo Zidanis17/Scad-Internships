@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
+import Modal from '../../components/common/Modal';
+import EvaluationForm from '../../components/evaluation/EvaluationForm';
 
 // Dummy data for majors and semesters
 const majorsList = [
@@ -672,7 +674,34 @@ const dummyStudentData = {
     { id: 1, type: 'application', title: 'Application Status Update', message: 'Your application for "Software Engineering Intern" at Tech Solutions Inc. has been accepted!', date: '2025-05-09', read: false, details: 'Congratulations! Your application has been reviewed and accepted. Please check your email for further instructions and schedule your onboarding session within the next 7 days.', actions: [{ label: 'View Application', action: 'view', path: '/student/applications' }] },
     { id: 2, type: 'report', title: 'Report Status Update', message: 'Your internship report has been flagged. Please check the comments.', date: '2025-05-08', read: true, details: 'Your supervisor has left some comments on your latest weekly report. They\'ve requested clarification on the tasks you completed last week. Please revise your report by Friday.', actions: [{ label: 'View Comments', action: 'comments', path: '/student/reports' }, { label: 'Edit Report', action: 'edit', path: '/student/reports' }] },
     { id: 3, type: 'cycle', title: 'New Internship Cycle', message: 'Summer 2025 internship cycle has begun! Start applying now.', date: '2025-05-01', read: true, details: 'The summer 2025 internship cycle is now open for applications. Over 150 companies have posted new positions. Based on your profile, we recommend checking out opportunities in software development and data analysis.', actions: [{ label: 'Browse Opportunities', action: 'browse', path: '/student/internships' }, { label: 'Update Preferences', action: 'preferences', path: '/student/profile' }] }
+  ],
+  previousInternships: [
+    {
+      id: 1,
+      companyId: 1,
+      companyName: 'Tech Solutions Inc.',
+      role: 'Software Engineering Intern',
+      duration: 'Summer 2024',
+      evaluation: {
+        companyName: "Tech Solutions Inc.",
+        rating: 4,
+        strengths: 'Great team, interesting projects',
+        areasForImprovement: 'More structured onboarding',
+        comments: 'Overall a positive experience',
+        recommended: true,
+        date: '2024-09-01'
+      }
+    },
+    {
+      id: 2,
+      companyId: 2,
+      companyName: 'DataInsights Corp.',
+      role: 'Data Analysis Intern',
+      duration: 'Fall 2024',
+      evaluation: null
+    }
   ]
+
 };
 
 const dummyProStudentData = {
@@ -691,6 +720,31 @@ const dummyProStudentData = {
     { id: 3, type: 'appointment', title: 'Career Guidance Appointment', message: 'Your appointment with SCAD Office is confirmed for 2025-05-12.', date: '2025-05-08', read: true, details: 'Your career guidance appointment with the Student Career Advancement Department (SCAD) has been confirmed for Monday, May 12, 2025, at 2:00 PM. Please arrive 10 minutes early and bring your updated CV and portfolio if available. The meeting will take place in the SCAD office, Building C, Room 210.', actions: [{ label: 'View Appointment', action: 'view', path: '/proStudent/career-guidance' }] },
     { id: 4, type: 'appointment', title: 'Appointment Request Accepted', message: 'Your appointment request with SCAD Office has been accepted.', date: '2025-05-07', read: true, details: 'The SCAD Officer has reviewed and accepted your appointment request. You will be notified of the scheduled date and time shortly. Please check your email for any additional information.', actions: [{ label: 'View Appointment', action: 'view', path: '/proStudent/career-guidance' }] },
     { id: 5, type: 'call', title: 'Upcoming Virtual Meeting', message: 'You have a virtual meeting with SCAD Office tomorrow at 10:00 AM.', date: '2025-05-15', read: true, details: 'Your virtual career guidance meeting with the SCAD Office is scheduled for tomorrow, May 16, 2025, at 10:00 AM. Please ensure you have a stable internet connection and join the meeting 5 minutes early. The meeting link will be sent to your email shortly.', actions: [{ label: 'View Meeting Details', action: 'view', path: '/proStudent/career-guidance' }] }
+  ],
+  previousInternships: [
+    {
+      id: 1,
+      companyId: 1,
+      companyName: 'Tech Solutions Inc.',
+      role: 'Software Engineering Intern',
+      duration: 'Summer 2024',
+      evaluation: {
+        rating: 4,
+        strengths: 'Great team, interesting projects',
+        areasForImprovement: 'More structured onboarding',
+        comments: 'Overall a positive experience',
+        recommended: true,
+        date: '2024-09-01'
+      }
+    },
+    {
+      id: 2,
+      companyId: 2,
+      companyName: 'DataInsights Corp.',
+      role: 'Data Analysis Intern',
+      duration: 'Fall 2024',
+      evaluation: null
+    }
   ]
 };
 
@@ -796,15 +850,21 @@ const UnifiedDashboard = () => {
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [majorSemesterModalOpen, setMajorSemesterModalOpen] = useState(false);
+  const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
+  const [currentInternship, setCurrentInternship] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
   const getCompaniesByMajor = (majorId) => dummyCompaniesByMajor[majorId] || dummyCompaniesByMajor[1];
   const getInternshipsByMajor = (majorId) => dummyInternshipsByMajor[majorId] || dummyInternshipsByMajor[1];
   const getViewedCompaniesByMajor = (majorId) => dummyViewedCompaniesByMajor[majorId] || [];
-  console.log(role);
+
   useEffect(() => {
-    if (role === 'student'){ setStudent(dummyStudentData);}
-    else if (role === 'proStudent') {setStudent(dummyProStudentData); }
+    if (role === 'student') {
+      setStudent(dummyStudentData);
+    } else if (role === 'proStudent') {
+      setStudent(dummyProStudentData);
+    }
   }, [role]);
 
   useEffect(() => {
@@ -847,6 +907,15 @@ const UnifiedDashboard = () => {
     console.log(`Action triggered: ${action.action}`);
     setSelectedNotification(null);
     if (action.path) navigate(action.path);
+  };
+
+  const handleDeleteEvaluation = (internship) => {
+    if (window.confirm('Are you sure you want to delete this evaluation?')) {
+      const updatedInternships = student.previousInternships.map(intern =>
+        intern.id === internship.id ? { ...intern, evaluation: null } : intern
+      );
+      setStudent({ ...student, previousInternships: updatedInternships });
+    }
   };
 
   return (
@@ -951,6 +1020,50 @@ const UnifiedDashboard = () => {
               </div>
             </div>
           )}
+
+          { (
+            <div className="bg-white rounded-lg shadow-md p-6 mt-8">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Previous Companies You Interned At</h2>
+              {student.previousInternships && student.previousInternships.length > 0 ? (
+                <div className="space-y-4">
+                  {student.previousInternships.map((internship) => (
+                    <div key={internship.id} className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                      <h3 className="font-medium text-gray-900">{internship.companyName}</h3>
+                      <p className="text-sm text-gray-600">Role: {internship.role}</p>
+                      <p className="text-sm text-gray-600">Duration: {internship.duration}</p>
+                      {internship.evaluation ? (
+                        <div>
+                          <p className="text-sm text-gray-600">Rating: {internship.evaluation.rating} stars</p>
+                          <p className="text-sm text-gray-600">Recommended: {internship.evaluation.recommended ? 'Yes' : 'No'}</p>
+                          <div className="mt-2 flex space-x-2">
+                            <Button onClick={() => {
+                              setCurrentInternship(internship);
+                              setIsEditing(false);
+                              setIsEvaluationModalOpen(true);
+                            }}>View Details</Button>
+                            <Button onClick={() => {
+                              setCurrentInternship(internship);
+                              setIsEditing(true);
+                              setIsEvaluationModalOpen(true);
+                            }}>Edit Evaluation</Button>
+                            <Button variant="danger" onClick={() => handleDeleteEvaluation(internship)}>Delete</Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <Button onClick={() => {
+                          setCurrentInternship(internship);
+                          setIsEditing(false);
+                          setIsEvaluationModalOpen(true);
+                        }}>Evaluate</Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No previous internships found.</p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="space-y-8">
@@ -979,33 +1092,31 @@ const UnifiedDashboard = () => {
             </div>
           </div>
 
-          { (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-800">Suggested Companies</h2>
-              </div>
-              <div className="space-y-4">
-                {suggestedCompanies.map((company) => (
-                  <div key={company.id} className="flex items-center space-x-3 border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                      <span className="font-medium text-gray-700">{company.name.charAt(0)}</span>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Suggested Companies</h2>
+            </div>
+            <div className="space-y-4">
+              {suggestedCompanies.map((company) => (
+                <div key={company.id} className="flex items-center space-x-3 border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="font-medium text-gray-700">{company.name.charAt(0)}</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">{company.name}</h3>
+                    <p className="text-sm text-gray-600">{company.industry}</p>
+                    <div className="mt-1 flex items-center">
+                      <span className="text-yellow-500 mr-1">★</span>
+                      <span className="text-sm text-gray-600">{company.rating} • Recommended by {company.recommendedBy} students</span>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">{company.name}</h3>
-                      <p className="text-sm text-gray-600">{company.industry}</p>
-                      <div className="mt-1 flex items-center">
-                        <span className="text-yellow-500 mr-1">★</span>
-                        <span className="text-sm text-gray-600">{company.rating} • Recommended by {company.recommendedBy} students</span>
-                      </div>
-                      <div className="mt-1">
-                        <span className="text-sm text-blue-600">{company.openPositions} open positions</span>
-                      </div>
+                    <div className="mt-1">
+                      <span className="text-sm text-blue-600">{company.openPositions} open positions</span>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Links</h2>
@@ -1028,6 +1139,50 @@ const UnifiedDashboard = () => {
 
       {selectedNotification && <NotificationModal notification={selectedNotification} onClose={handleModalClose} onAction={handleNotificationAction} />}
       <MajorSemesterModal isOpen={majorSemesterModalOpen} onClose={() => setMajorSemesterModalOpen(false)} majors={majorsList} semesters={semestersList} currentMajorId={student.majorId} currentSemester={student.semester} onSave={handleMajorSemesterChange} />
+      {isEvaluationModalOpen && currentInternship && (
+        <Modal
+          isOpen={isEvaluationModalOpen}
+          onClose={() => setIsEvaluationModalOpen(false)}
+          title={`Evaluation for ${currentInternship.companyName}`}
+          
+          footer={
+            currentInternship.evaluation && !isEditing ? (
+              <Button onClick={() => setIsEvaluationModalOpen(false)}>Close</Button>
+            ) : null
+          }
+        >
+          {currentInternship.evaluation && !isEditing ? (
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Evaluation Details</h3>
+              <p><strong>Rating:</strong> {currentInternship.evaluation.companyName} stars</p>
+              <p><strong>Rating:</strong> {currentInternship.evaluation.rating} stars</p>
+              <p><strong>Strengths:</strong> {currentInternship.evaluation.strengths}</p>
+              <p><strong>Areas for Improvement:</strong> {currentInternship.evaluation.areasForImprovement}</p>
+              <p><strong>Comments:</strong> {currentInternship.evaluation.comments}</p>
+              <p><strong>Recommended:</strong> {currentInternship.evaluation.recommended ? 'Yes' : 'No'}</p>
+              <p><strong>Date:</strong> {currentInternship.evaluation.date}</p>
+            </div>
+          ) : (
+            <EvaluationForm
+              onSubmit={(evaluationData) => {
+                const updatedInternships = student.previousInternships.map(intern =>
+                  intern.id === currentInternship.id ? {
+                    ...intern,
+                    evaluation: {
+                      ...evaluationData,
+                      date: new Date().toISOString().split('T')[0]
+                    }
+                  } : intern
+                );
+                setStudent({ ...student, previousInternships: updatedInternships });
+                setIsEvaluationModalOpen(false);
+              }}
+              initialData={currentInternship.evaluation || { companyName: currentInternship.companyName }}
+              evaluationType="company"
+            />
+          )}
+        </Modal>
+      )}
     </div>
   );
 };
