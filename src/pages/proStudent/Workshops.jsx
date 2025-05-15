@@ -4,7 +4,6 @@ import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
 import CustomVideoPlayer from '../../components/common/CustomVideoPlayer';
 
-// Dummy workshop data with an additional recorded workshop
 const dummyWorkshops = [
   {
     id: 1,
@@ -15,8 +14,10 @@ const dummyWorkshops = [
     time: '10:00 AM - 12:00 PM',
     speaker: 'John Doe',
     isLive: true,
+    requiresRegistration: true,
     registered: true,
-    videoId: 'OA4JhdNf-DA'
+    videoId: 'CMwXHvSfJxk',
+    comments: []
   },
   {
     id: 2,
@@ -27,8 +28,13 @@ const dummyWorkshops = [
     time: '2:00 PM - 4:00 PM',
     speaker: 'Jane Smith',
     isLive: false,
+    requiresRegistration: true,
     registered: false,
-    videoId: 'dQw4w9WgXcQ'
+    videoId: 'M7lc1UVf-VE',
+    comments: [
+      { id: 1, user: 'User1', message: 'Great workshop!', timestamp: '2025-05-21' },
+      { id: 2, user: 'User2', message: 'Very informative.', timestamp: '2025-05-22' }
+    ]
   },
   {
     id: 3,
@@ -39,8 +45,13 @@ const dummyWorkshops = [
     time: '1:00 PM - 3:00 PM',
     speaker: 'Emily Johnson',
     isLive: false,
-    registered: true,
-    videoId: 'xyz789video'
+    requiresRegistration: false,
+    registered: false,
+    videoId: 'ukzFI9rgwfU',
+    comments: [
+      { id: 1, user: 'User3', message: 'Loved the examples!', timestamp: '2025-05-26' },
+      { id: 2, user: 'User4', message: 'Clear explanations.', timestamp: '2025-05-27' }
+    ]
   }
 ];
 
@@ -50,26 +61,21 @@ const Workshops = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
   const [isLiveModalOpen, setIsLiveModalOpen] = useState(false);
-  const [isLiveWorkshop, setIsLiveWorkshop] = useState(false);
+  const [watchingWorkshop, setWatchingWorkshop] = useState(null);
   const [notes, setNotes] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
+  const [watchingComments, setWatchingComments] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API call
     setTimeout(() => {
       setWorkshops(dummyWorkshops);
       setIsLoading(false);
     }, 500);
   }, []);
-
-  const filteredWorkshops = workshops.filter(workshop =>
-    workshop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    workshop.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const handleRegister = (workshop) => {
     setWorkshops(workshops.map(w => w.id === workshop.id ? { ...w, registered: true } : w));
@@ -77,19 +83,26 @@ const Workshops = () => {
   };
 
   const handleJoinLive = (workshop) => {
-    setSelectedWorkshop(workshop);
-    setIsLiveWorkshop(true);
+    setWatchingWorkshop(workshop);
     setIsLiveModalOpen(true);
     setChatMessages([
       { id: 1, user: 'Alice', message: 'Excited for this workshop!', timestamp: '10:01 AM' },
       { id: 2, user: 'Bob', message: 'Me too!', timestamp: '10:02 AM' }
     ]);
+    setWatchingComments([]);
+    setNotes('');
+    setRating(0);
+    setFeedback('');
   };
 
   const handleWatch = (workshop) => {
-    setSelectedWorkshop(workshop);
-    setIsLiveWorkshop(false);
+    setWatchingWorkshop(workshop);
     setIsLiveModalOpen(true);
+    setChatMessages([]);
+    setWatchingComments(workshop.comments || []);
+    setNotes('');
+    setRating(0);
+    setFeedback('');
   };
 
   const handleSendMessage = () => {
@@ -105,15 +118,29 @@ const Workshops = () => {
 
   const handleSubmitFeedback = () => {
     if (rating === 0) return;
-    // Simulate feedback submission
+    console.log(`Feedback for ${watchingWorkshop?.name}: Rating ${rating}, Feedback: ${feedback}`);
     setIsLiveModalOpen(false);
     setRating(0);
     setFeedback('');
   };
 
   const handleDownloadCertificate = (workshop) => {
-    // Simulate certificate download
+    const certificateContent = `Certificate of Completion\n\nThis is to certify that [User Name] has completed the workshop "${workshop.name}" on ${workshop.endDate}.\n\nSpeaker: ${workshop.speaker}`;
+    const blob = new Blob([certificateContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${workshop.name}_certificate.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
+
+  const filteredWorkshops = workshops.filter(workshop =>
+    workshop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    workshop.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
@@ -121,7 +148,6 @@ const Workshops = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-8">
-      {/* Header */}
       <div className="bg-blue-600 text-white p-6">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-bold">Career Workshops</h1>
@@ -129,7 +155,6 @@ const Workshops = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 mt-8">
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
@@ -153,35 +178,22 @@ const Workshops = () => {
                 <p className="text-sm text-gray-500 mt-2">Date: {workshop.startDate}</p>
                 <p className="text-sm text-gray-500">Time: {workshop.time}</p>
                 <p className="text-sm text-gray-500">Speaker: {workshop.speaker}</p>
-                <div className="mt-4">
-                  {workshop.registered ? (
-                    <>
-                      {workshop.isLive ? (
-                        <Button
-                          onClick={() => handleWatch(workshop)}
-                          className="bg-blue-600 text-white hover:bg-blue-700 w-full"
-                        >
-                          Join Live
-                        </Button>
+                <div className="mt-4 flex space-x-2">
+                  {workshop.requiresRegistration ? (
+                    workshop.registered ? (
+                      workshop.isLive ? (
+                        <Button onClick={() => handleJoinLive(workshop)}>Join Live</Button>
                       ) : (
-                        <Button
-                          onClick={() => handleJoinLive(workshop)}
-                          className="bg-green-600 text-white hover:bg-green-700 w-full"
-                        >
-                          Watch
-                        </Button>
-                      )}
-                    </>
-                  ) : (
-                    <Button
-                      onClick={() => {
+                        <Button onClick={() => handleDownloadCertificate(workshop)}>Download Certificate</Button>
+                      )
+                    ) : (
+                      <Button onClick={() => {
                         setSelectedWorkshop(workshop);
                         setIsModalOpen(true);
-                      }}
-                      className="bg-blue-600 text-white hover:bg-blue-700 w-full"
-                    >
-                      Register
-                    </Button>
+                      }}>Register</Button>
+                    )
+                  ) : (
+                    <Button onClick={() => handleWatch(workshop)}>Watch Video</Button>
                   )}
                 </div>
               </div>
@@ -195,7 +207,6 @@ const Workshops = () => {
         )}
       </div>
 
-      {/* Register Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -217,39 +228,69 @@ const Workshops = () => {
         </div>
       </Modal>
 
-      {/* Workshop Modal */}
       <Modal
         isOpen={isLiveModalOpen}
-        onClose={() => setIsLiveModalOpen(false)}
-        title={selectedWorkshop?.name}
+        onClose={() => {
+          setIsLiveModalOpen(false);
+          setWatchingWorkshop(null);
+          setChatMessages([]);
+          setWatchingComments([]);
+          setNotes('');
+          setRating(0);
+          setFeedback('');
+        }}
+        title={watchingWorkshop?.name}
         size="large"
       >
         <div className="space-y-4">
           <div className="flex space-x-4">
             <div className="flex-1">
-              <CustomVideoPlayer videoId={selectedWorkshop?.videoId} isLive={isLiveWorkshop} />
+              <CustomVideoPlayer
+                videoId={watchingWorkshop?.videoId}
+                isLive={watchingWorkshop?.isLive}
+              />
             </div>
             <div className="w-1/3">
-              <h4 className="font-semibold mb-2">Chat</h4>
-              <div className="bg-gray-50 h-48 rounded-lg p-2 overflow-y-auto">
-                {chatMessages.map((msg) => (
-                  <div key={msg.id} className="mb-2">
-                    <p className="text-sm font-medium">{msg.user} <span className="text-xs text-gray-500">{msg.timestamp}</span></p>
-                    <p className="text-sm">{msg.message}</p>
+              {watchingWorkshop?.isLive ? (
+                <>
+                  <h4 className="font-semibold mb-2">Live Chat</h4>
+                  <div className="bg-gray-50 h-48 rounded-lg p-2 overflow-y-auto">
+                    {chatMessages.map((msg) => (
+                      <div key={msg.id} className="mb-2">
+                        <p className="text-sm font-medium">
+                          {msg.user} <span className="text-xs text-gray-500">{msg.timestamp}</span>
+                        </p>
+                        <p className="text-sm">{msg.message}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <div className="mt-2 flex">
-                <Input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type a message..."
-                  className="flex-1"
-                />
-                <Button onClick={handleSendMessage} className="ml-2">
-                  Send
-                </Button>
-              </div>
+                  <div className="mt-2 flex">
+                    <Input
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder="Type a message..."
+                      className="flex-1"
+                    />
+                    <Button onClick={handleSendMessage} className="ml-2">
+                      Send
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h4 className="font-semibold mb-2">Comments</h4>
+                  <div className="bg-gray-50 h-48 rounded-lg p-2 overflow-y-auto">
+                    {watchingComments.map((comment) => (
+                      <div key={comment.id} className="mb-2">
+                        <p className="text-sm font-medium">
+                          {comment.user} <span className="text-xs text-gray-500">{comment.timestamp}</span>
+                        </p>
+                        <p className="text-sm">{comment.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
           <div>
