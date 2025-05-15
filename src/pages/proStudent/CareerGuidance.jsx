@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
+import { useToast } from '../../components/common/ToastContext';
 
 // Dummy appointment data
 const dummyAppointments = [
@@ -22,6 +23,7 @@ const dummyAppointments = [
 ];
 
 const CareerGuidance = () => {
+  const { error } = useToast();
   const [appointments, setAppointments] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
@@ -71,6 +73,7 @@ const CareerGuidance = () => {
     setIsCallModalOpen(true);
     // Simulate incoming call notification
     setTimeout(() => {
+      error('The other person has left the call.');
     }, 1000);
   };
 
