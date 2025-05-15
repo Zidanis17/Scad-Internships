@@ -30,6 +30,7 @@ import FacultyDashboard from 'pages/faculty/FacultyDashboard';
 import FacultyStatistics from 'pages/faculty/FacultyStatistics';
 import FacultyProfile from 'pages/faculty/FacultyProfile'
 import AutoEmailSender from './components/common/AutoEmailSender';
+import Internships from './pages/student/Internship';
 
 
 
@@ -48,6 +49,7 @@ function App() {
           <Route path="/company/internship-posts" element={<InternshipPosts />} />
           <Route path="/company/applications" element={<CompanyApplications />} />
           <Route path="/company/interns" element={<CompanyInterns />} />
+          <Route path="/company/internships" element={<Internships />} />
           <Route path="/student/dashboard" element={<ProStudentDashboard />} />
           <Route path="/student/profile" element={<StudentProfile />} />
           <Route path="/student/internships" element={<StudentInternship />} />
@@ -69,6 +71,7 @@ function App() {
           <Route path="/scadOffice/profile" element={<ScadProfile />} />
           <Route path="/scad/student-management" element={<StudentManagement />} />
           <Route path="/scad/statistics" element={<Statistics />} />
+          <Route path="/scad/internships" element={<Internships />} />
           <Route path="/faculty/report-reviews" element={<FacultyReportReview />} />
           <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
           <Route path="/faculty/faculty-statistics" element={<FacultyStatistics />} />

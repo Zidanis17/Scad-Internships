@@ -44,6 +44,7 @@ const Navbar = () => {
         return [
           { name: 'Dashboard', path: '/company/dashboard' },
           { name: 'My Internships', path: '/company/internship-posts' },
+          { name: 'All Internships', path: '/company/internships' },
           { name: 'Applications', path: '/company/applications' },
           { name: 'Current Interns', path: '/company/interns' },
         ];
@@ -57,6 +58,7 @@ const Navbar = () => {
         return [
           { name: 'Dashboard', path: '/scad/dashboard' },
           { name: 'Company Applications', path: '/scad/company-applications' },
+          { name: 'Internships', path: '/scad/internships' },
           { name: 'Internship Cycles', path: '/scad/internship-cycles' },
           { name: 'Report Reviews', path: '/faculty/report-reviews' },
           { name: 'Statistics', path: '/scad/statistics' },

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import InternshipList from '../../components/internship/InternshipList';
 import Modal from '../../components/common/Modal';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import { useToast } from '../../components/common/ToastContext';
+import { AuthContext } from '../../context/AuthContext';
 
 // Dummy internship data
 const dummyInternships = [
@@ -62,6 +63,7 @@ const dummyInternships = [
 ];
 
 const Internships = () => {
+  const { userRole } = useContext(AuthContext);
   const [internships, setInternships] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({ industry: '', duration: '', isPaid: '' });
@@ -106,6 +108,8 @@ const Internships = () => {
     success('Application submitted successfully!');
   };
 
+  const canApply = ['student', 'proStudent'].includes(userRole);
+
   return (
     <div className="container mx-auto py-6 px-4">
       <div className="mb-8">
@@ -129,6 +133,7 @@ const Internships = () => {
             <option value="Information Technology">Information Technology</option>
             <option value="Data Analytics">Data Analytics</option>
             <option value="UX/UI Design">UX/UI Design</option>
+            <option value="Businessing">Businessing</option>
           </select>
           <select
             value={filters.duration}
@@ -138,6 +143,7 @@ const Internships = () => {
             <option value="">All Durations</option>
             <option value="3 months">3 months</option>
             <option value="4 months">4 months</option>
+            <option value="3 months we wagba">3 months we wagba</option>
           </select>
           <select
             value={filters.isPaid}
@@ -165,9 +171,11 @@ const Internships = () => {
             <p><strong>Description:</strong> {selectedInternship.description}</p>
             <p><strong>Skills Required:</strong> {selectedInternship.skills.join(', ')}</p>
             <p><strong>Deadline:</strong> {selectedInternship.deadline}</p>
-            <div className="mt-4">
-              <Button onClick={handleApply}>Apply Now</Button>
-            </div>
+            {canApply && (
+              <div className="mt-4">
+                <Button onClick={handleApply}>Apply Now</Button>
+              </div>
+            )}
           </div>
         </Modal>
       )}
