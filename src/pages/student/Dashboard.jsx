@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/common/Button';
 
 // Dummy data for the student dashboard
@@ -18,7 +18,16 @@ const dummyStudentData = {
       title: 'Application Status Update',
       message: 'Your application for "Software Engineering Intern" at Tech Solutions Inc. has been accepted!',
       date: '2025-05-09',
-      read: false
+      read: false,
+      details: 'Congratulations! Your application has been reviewed and accepted. Please check your email for further instructions and schedule your onboarding session within the next 7 days.',
+      actions: [
+
+        { 
+          label: 'View Application', 
+          action: 'view',
+          path: '/student/applications'
+        }
+      ]
     },
     {
       id: 2,
@@ -26,7 +35,20 @@ const dummyStudentData = {
       title: 'Report Status Update',
       message: 'Your internship report has been flagged. Please check the comments.',
       date: '2025-05-08',
-      read: true
+      read: true,
+      details: 'Your supervisor has left some comments on your latest weekly report. They\'ve requested clarification on the tasks you completed last week. Please revise your report by Friday.',
+      actions: [
+        { 
+          label: 'View Comments', 
+          action: 'comments',
+          path: '/student/reports'
+        },
+        { 
+          label: 'Edit Report', 
+          action: 'edit',
+          path: '/student/reports'
+        }
+      ]
     },
     {
       id: 3,
@@ -34,7 +56,20 @@ const dummyStudentData = {
       title: 'New Internship Cycle',
       message: 'Summer 2025 internship cycle has begun! Start applying now.',
       date: '2025-05-01',
-      read: true
+      read: true,
+      details: 'The summer 2025 internship cycle is now open for applications. Over 150 companies have posted new positions. Based on your profile, we recommend checking out opportunities in software development and data analysis.',
+      actions: [
+        { 
+          label: 'Browse Opportunities', 
+          action: 'browse',
+          path: '/student/internships'
+        },
+        { 
+          label: 'Update Preferences', 
+          action: 'preferences',
+          path: '/student/profile'
+        }
+      ]
     }
   ]
 };
@@ -105,11 +140,103 @@ const dummyRecentInternships = [
   }
 ];
 
+// Modal component for notification details
+const NotificationModal = ({ notification, onClose, onAction }) => {
+  if (!notification) return null;
+
+  // Define icon based on notification type
+  const getTypeIcon = () => {
+    switch (notification.type) {
+      case 'application':
+        return (
+          <div className="bg-blue-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        );
+      case 'report':
+        return (
+          <div className="bg-red-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+        );
+      case 'cycle':
+        return (
+          <div className="bg-green-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        );
+      default:
+        return (
+          <div className="bg-gray-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-auto overflow-hidden animate-fade-in-up">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200 flex items-start space-x-4">
+          {getTypeIcon()}
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-gray-900">{notification.title}</h3>
+            <p className="text-sm text-gray-500 mt-1">{notification.date}</p>
+          </div>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500 focus:outline-none"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        {/* Content */}
+        <div className="p-6">
+          <p className="text-gray-600">{notification.details}</p>
+        </div>
+        
+        {/* Actions */}
+        <div className="p-6 bg-gray-50 flex flex-wrap justify-end space-x-3">
+          <button 
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded focus:outline-none"
+          >
+            Close
+          </button>
+          {notification.actions && notification.actions.map((action, index) => (
+            <button 
+              key={index}
+              onClick={() => onAction(action)}
+              className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded focus:outline-none"
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   const [student, setStudent] = useState(null);
   const [suggestedCompanies, setSuggestedCompanies] = useState([]);
   const [recentInternships, setRecentInternships] = useState([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Simulate API calls with dummy data
@@ -133,6 +260,39 @@ const Dashboard = () => {
       notifications: updatedNotifications
     });
     setUnreadNotifications(0);
+  };
+
+  const handleNotificationClick = (notification) => {
+    // Mark this notification as read
+    const updatedNotifications = student.notifications.map(n => 
+      n.id === notification.id ? { ...n, read: true } : n
+    );
+    
+    setStudent({
+      ...student,
+      notifications: updatedNotifications
+    });
+    
+    // Update unread count
+    setUnreadNotifications(updatedNotifications.filter(n => !n.read).length);
+    
+    // Show the notification modal
+    setSelectedNotification(notification);
+  };
+
+  const handleModalClose = () => {
+    setSelectedNotification(null);
+  };
+
+  const handleNotificationAction = (action) => {
+    console.log(`Action triggered: ${action.action}`);
+    // Close the modal
+    setSelectedNotification(null);
+    
+    // Navigate to the corresponding page
+    if (action.path) {
+      navigate(action.path);
+    }
   };
 
   return (
@@ -258,7 +418,8 @@ const Dashboard = () => {
                 student.notifications.map((notification) => (
                   <div 
                     key={notification.id} 
-                    className={`p-3 rounded-md ${notification.read ? 'bg-gray-50' : 'bg-blue-50'}`}
+                    className={`p-3 rounded-md ${notification.read ? 'bg-gray-50' : 'bg-blue-50'} cursor-pointer hover:bg-gray-100 transition-colors duration-200`}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex justify-between">
                       <h3 className="font-medium text-gray-900">{notification.title}</h3>
@@ -322,10 +483,25 @@ const Dashboard = () => {
               >
                 Browse Internships
               </Link>
+              <Link 
+                to="/student/profile" 
+                className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-700 font-medium"
+              >
+                My Profile
+              </Link>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Notification Modal */}
+      {selectedNotification && (
+        <NotificationModal 
+          notification={selectedNotification}
+          onClose={handleModalClose}
+          onAction={handleNotificationAction}
+        />
+      )}
     </div>
   );
 };
