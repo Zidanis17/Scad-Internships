@@ -103,7 +103,7 @@ const InternshipCycles = () => {
             placeholder="Search by cycle name or status..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full md:w-1/3"
+            className="flex-1 "
           />
           <Button
             onClick={() => handleOpenModal()}

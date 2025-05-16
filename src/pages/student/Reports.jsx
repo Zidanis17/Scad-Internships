@@ -1,27 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import Button from '../../components/common/Button';
-import Input from '../../components/common/Input';
-import Modal from '../../components/common/Modal';
-import { useToast } from '../../components/common/ToastContext';
+import React, { useState, useEffect } from "react";
+import Button from "../../components/common/Button";
+import Input from "../../components/common/Input";
+import Modal from "../../components/common/Modal";
+import { useToast } from "../../components/common/ToastContext";
 
 const InternshipDashboard = () => {
   // States for reports
   const [reports, setReports] = useState([]);
   const [filteredReports, setFilteredReports] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [currentReport, setCurrentReport] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAppealModalOpen, setIsAppealModalOpen] = useState(false);
-  const [appealMessage, setAppealMessage] = useState('');
+  const [appealMessage, setAppealMessage] = useState("");
   const [isPrintMode, setIsPrintMode] = useState(false);
-  
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState(null);
+
   // States for resources
-  const [activeTab, setActiveTab] = useState('reports');
-  const [activeResourceTab, setActiveResourceTab] = useState('videos');
-  
+  const [activeTab, setActiveTab] = useState("reports");
+  const [activeResourceTab, setActiveResourceTab] = useState("videos");
+
   const { success } = useToast();
 
   // Mock data for reports
@@ -33,10 +35,11 @@ const InternshipDashboard = () => {
       jobTitle: "Software Engineering Intern",
       submissionDate: "2025-04-15",
       status: "accepted",
-      introduction: "During my internship at Tech Solutions Inc., I had the opportunity to work with cutting-edge technologies and contribute to real-world projects.",
+      introduction:
+        "During my internship at Tech Solutions Inc., I had the opportunity to work with cutting-edge technologies and contribute to real-world projects.",
       body: "This internship provided me with valuable experience in agile development methodologies and collaborative teamwork. I worked on developing new features for their client-facing application using React and Node.js. The team was supportive and provided regular feedback that helped me improve my skills.",
       helpfulCourses: [1, 4],
-      isFinalized: true
+      isFinalized: true,
     },
     {
       id: 2,
@@ -45,10 +48,11 @@ const InternshipDashboard = () => {
       jobTitle: "Data Analysis Intern",
       submissionDate: "2025-05-01",
       status: "pending",
-      introduction: "My internship at DataInsights Corp involved analyzing large datasets and creating visualization dashboards for clients.",
+      introduction:
+        "My internship at DataInsights Corp involved analyzing large datasets and creating visualization dashboards for clients.",
       body: "Throughout this internship, I applied statistical methods to analyze customer behavior data and created interactive dashboards using Tableau. I learned how to process large datasets efficiently and communicate findings to non-technical stakeholders.",
       helpfulCourses: [2, 3],
-      isFinalized: true
+      isFinalized: true,
     },
     {
       id: 3,
@@ -57,12 +61,14 @@ const InternshipDashboard = () => {
       jobTitle: "UX Research Intern",
       submissionDate: "2025-05-05",
       status: "flagged",
-      comments: "Please provide more specific examples of your contributions to the projects mentioned in section 2.",
-      introduction: "At Creative Studios, I conducted user research and contributed to the design process for several mobile applications.",
+      comments:
+        "Please provide more specific examples of your contributions to the projects mentioned in section 2.",
+      introduction:
+        "At Creative Studios, I conducted user research and contributed to the design process for several mobile applications.",
       body: "This report describes my experience conducting user interviews, creating wireframes, and collaborating with developers to implement designs. I learned the importance of user-centered design and iterative development processes.",
       helpfulCourses: [4, 5],
-      isFinalized: true
-    }
+      isFinalized: true,
+    },
   ];
 
   // Mock data for resources
@@ -71,61 +77,69 @@ const InternshipDashboard = () => {
       {
         id: 1,
         title: "Qualifying Internships for Your Major",
-        description: "Learn about the criteria for internships that qualify for academic credit in Computer Science and related fields.",
+        description:
+          "Learn about the criteria for internships that qualify for academic credit in Computer Science and related fields.",
         youtubeId: "tLjROy6rNcU",
-        duration: "14:35"
+        duration: "14:35",
       },
       {
         id: 2,
         title: "How to Secure a Technical Internship",
-        description: "Tips and strategies for landing competitive internships in the tech industry.",
+        description:
+          "Tips and strategies for landing competitive internships in the tech industry.",
         youtubeId: "PdFP9IanGHQ",
-        duration: "22:18"
-      }
+        duration: "22:18",
+      },
     ],
     documents: [
       {
         id: 1,
         title: "Internship Report Guidelines",
-        description: "Comprehensive guide on how to write effective internship reports that meet department requirements.",
+        description:
+          "Comprehensive guide on how to write effective internship reports that meet department requirements.",
         fileType: "PDF",
-        fileSize: "1.2 MB"
+        fileSize: "1.2 MB",
       },
       {
         id: 2,
         title: "Sample Internship Report",
-        description: "An example of a well-written internship report that received excellent feedback.",
+        description:
+          "An example of a well-written internship report that received excellent feedback.",
         fileType: "PDF",
-        fileSize: "2.5 MB"
+        fileSize: "2.5 MB",
       },
       {
         id: 3,
         title: "Internship Evaluation Form",
-        description: "The form your internship supervisor will need to complete for your final evaluation.",
+        description:
+          "The form your internship supervisor will need to complete for your final evaluation.",
         fileType: "DOCX",
-        fileSize: "345 KB"
-      }
+        fileSize: "345 KB",
+      },
     ],
     links: [
       {
         id: 1,
         title: "Department Internship Portal",
-        description: "Official department webpage with internship opportunities and resources.",
-        url: "https://example.com/department-internships"
+        description:
+          "Official department webpage with internship opportunities and resources.",
+        url: "https://example.com/department-internships",
       },
       {
         id: 2,
         title: "Career Services - Internship Resources",
-        description: "University-wide resources for finding and applying to internships.",
-        url: "https://example.com/career-services/internships"
+        description:
+          "University-wide resources for finding and applying to internships.",
+        url: "https://example.com/career-services/internships",
       },
       {
         id: 3,
         title: "Internship Credit Requirements",
-        description: "Official requirements for receiving academic credit for your internship experience.",
-        url: "https://example.com/internship-credits"
-      }
-    ]
+        description:
+          "Official requirements for receiving academic credit for your internship experience.",
+        url: "https://example.com/internship-credits",
+      },
+    ],
   };
 
   useEffect(() => {
@@ -138,19 +152,20 @@ const InternshipDashboard = () => {
 
   useEffect(() => {
     let results = reports;
-    
+
     if (searchTerm) {
-      results = results.filter(report => 
-        report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.jobTitle.toLowerCase().includes(searchTerm.toLowerCase())
+      results = results.filter(
+        (report) =>
+          report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          report.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          report.jobTitle.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
-    if (statusFilter !== 'all') {
-      results = results.filter(report => report.status === statusFilter);
+
+    if (statusFilter !== "all") {
+      results = results.filter((report) => report.status === statusFilter);
     }
-    
+
     setFilteredReports(results);
   }, [searchTerm, statusFilter, reports]);
 
@@ -160,21 +175,39 @@ const InternshipDashboard = () => {
     setIsModalOpen(true);
   };
 
+  // Add these handler functions with your other handler functions
+  const handleDeleteClick = (reportId) => {
+    const report = reports.find((r) => r.id === reportId);
+    setReportToDelete(report);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!reportToDelete) return;
+
+    const updatedReports = reports.filter(
+      (report) => report.id !== reportToDelete.id
+    );
+    setReports(updatedReports);
+    setIsDeleteModalOpen(false);
+    setReportToDelete(null);
+    success("Report deleted successfully!");
+  };
   const handleViewReport = (reportId) => {
-    const report = reports.find(r => r.id === reportId);
+    const report = reports.find((r) => r.id === reportId);
     setCurrentReport(report);
     setIsViewModalOpen(true);
   };
 
   const handleEditReport = (reportId) => {
-    const report = reports.find(r => r.id === reportId);
+    const report = reports.find((r) => r.id === reportId);
     setCurrentReport(report);
     setIsModalOpen(true);
   };
 
   const handleSubmitReport = (formData) => {
     if (currentReport) {
-      const updatedReports = reports.map(report => 
+      const updatedReports = reports.map((report) =>
         report.id === currentReport.id ? { ...report, ...formData } : report
       );
       setReports(updatedReports);
@@ -184,8 +217,8 @@ const InternshipDashboard = () => {
         ...formData,
         companyName: formData.companyName || "Company Name",
         jobTitle: formData.jobTitle || "Job Title",
-        submissionDate: new Date().toISOString().split('T')[0],
-        status: 'pending'
+        submissionDate: new Date().toISOString().split("T")[0],
+        status: "pending",
       };
       setReports([...reports, newReport]);
     }
@@ -195,16 +228,20 @@ const InternshipDashboard = () => {
 
   const handleAppealSubmit = () => {
     if (!appealMessage.trim()) return;
-    
-    const updatedReports = reports.map(report => 
-      report.id === currentReport.id ? 
-      { ...report, appealMessage, appealDate: new Date().toISOString().split('T')[0] } : 
-      report
+
+    const updatedReports = reports.map((report) =>
+      report.id === currentReport.id
+        ? {
+            ...report,
+            appealMessage,
+            appealDate: new Date().toISOString().split("T")[0],
+          }
+        : report
     );
     setReports(updatedReports);
     setIsAppealModalOpen(false);
-    setAppealMessage('');
-    
+    setAppealMessage("");
+
     success("Appeal submitted successfully");
   };
 
@@ -214,10 +251,10 @@ const InternshipDashboard = () => {
   };
 
   const handlePrintPDF = (reportId) => {
-    const reportToPrint = reports.find(r => r.id === reportId);
+    const reportToPrint = reports.find((r) => r.id === reportId);
     setCurrentReport(reportToPrint);
     setIsPrintMode(true);
-    
+
     setTimeout(() => {
       window.print();
       setTimeout(() => {
@@ -228,15 +265,15 @@ const InternshipDashboard = () => {
 
   const getStatusClass = (status) => {
     switch (status) {
-      case 'accepted':
-        return 'bg-green-100 text-green-800';
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
-      case 'flagged':
-        return 'bg-orange-100 text-orange-800';
-      case 'pending':
+      case "accepted":
+        return "bg-green-100 text-green-800";
+      case "rejected":
+        return "bg-red-100 text-red-800";
+      case "flagged":
+        return "bg-orange-100 text-orange-800";
+      case "pending":
       default:
-        return 'bg-yellow-100 text-yellow-800';
+        return "bg-yellow-100 text-yellow-800";
     }
   };
 
@@ -247,7 +284,7 @@ const InternshipDashboard = () => {
   // Component for the video player
   const VideoPlayer = ({ youtubeId, title }) => (
     <div className="aspect-w-16 aspect-h-9 mb-4">
-      <iframe 
+      <iframe
         className="w-full h-full rounded-lg shadow-md"
         src={`https://www.youtube.com/embed/${youtubeId}`}
         title={title}
@@ -261,9 +298,9 @@ const InternshipDashboard = () => {
   // Component for resource cards
   const ResourceCard = ({ resource, type }) => {
     const handleDownload = () => {
-      const link = document.createElement('a');
-      link.href = '/dummy.pdf';
-      link.download = 'dummy.pdf';
+      const link = document.createElement("a");
+      link.href = "/dummy.pdf";
+      link.download = "dummy.pdf";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -271,56 +308,91 @@ const InternshipDashboard = () => {
 
     return (
       <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
-        {type === 'videos' && (
+        {type === "videos" && (
           <VideoPlayer youtubeId={resource.youtubeId} title={resource.title} />
         )}
-        
-        <h3 className="text-lg font-bold text-gray-800 mb-2">{resource.title}</h3>
+
+        <h3 className="text-lg font-bold text-gray-800 mb-2">
+          {resource.title}
+        </h3>
         <p className="text-gray-600 mb-4">{resource.description}</p>
-        
+
         <div className="flex justify-between items-center">
-          {type === 'videos' && (
+          {type === "videos" && (
             <span className="text-sm text-gray-500">
               <span className="inline-block mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 inline-block mr-1">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4 inline-block mr-1"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </span>
               {resource.duration}
             </span>
           )}
-          
-          {type === 'documents' && (
+
+          {type === "documents" && (
             <span className="text-sm text-gray-500">
               <span className="inline-block mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 inline-block mr-1">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4 inline-block mr-1"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                  />
                 </svg>
               </span>
               {resource.fileType} · {resource.fileSize}
             </span>
           )}
-          
-          {type === 'links' && (
+
+          {type === "links" && (
             <span className="text-sm text-gray-500">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 inline-block mr-1">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-4 h-4 inline-block mr-1"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                />
               </svg>
               External Link
             </span>
           )}
-          
-          {type === 'documents' && (
+
+          {type === "documents" && (
             <Button variant="secondary" size="medium" onClick={handleDownload}>
               Download
             </Button>
           )}
-          
-          {type === 'links' && (
-            <Button 
-              variant="secondary" 
+
+          {type === "links" && (
+            <Button
+              variant="secondary"
               size="medium"
-              onClick={() => window.open(resource.url, '_blank')}
+              onClick={() => window.open(resource.url, "_blank")}
             >
               Visit
             </Button>
@@ -333,32 +405,32 @@ const InternshipDashboard = () => {
   // Form component for creating/editing reports
   const ReportForm = ({ onSubmit, initialData = {} }) => {
     const [formData, setFormData] = useState({
-      title: initialData.title || '',
-      companyName: initialData.companyName || '',
-      jobTitle: initialData.jobTitle || '',
-      introduction: initialData.introduction || '',
-      body: initialData.body || '',
-      helpfulCourses: initialData.helpfulCourses || []
+      title: initialData.title || "",
+      companyName: initialData.companyName || "",
+      jobTitle: initialData.jobTitle || "",
+      introduction: initialData.introduction || "",
+      body: initialData.body || "",
+      helpfulCourses: initialData.helpfulCourses || [],
     });
 
     const handleChange = (e) => {
       const { name, value } = e.target;
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleCheckboxChange = (e) => {
       const { value, checked } = e.target;
       const courseId = parseInt(value);
-      
+
       if (checked) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          helpfulCourses: [...prev.helpfulCourses, courseId]
+          helpfulCourses: [...prev.helpfulCourses, courseId],
         }));
       } else {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          helpfulCourses: prev.helpfulCourses.filter(id => id !== courseId)
+          helpfulCourses: prev.helpfulCourses.filter((id) => id !== courseId),
         }));
       }
     };
@@ -371,7 +443,10 @@ const InternshipDashboard = () => {
     return (
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Report Title*
           </label>
           <Input
@@ -386,7 +461,10 @@ const InternshipDashboard = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="companyName"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Company Name*
             </label>
             <Input
@@ -399,7 +477,10 @@ const InternshipDashboard = () => {
             />
           </div>
           <div>
-            <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="jobTitle"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Job Title*
             </label>
             <Input
@@ -414,7 +495,10 @@ const InternshipDashboard = () => {
         </div>
 
         <div>
-          <label htmlFor="introduction" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="introduction"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Introduction*
           </label>
           <textarea
@@ -429,7 +513,10 @@ const InternshipDashboard = () => {
         </div>
 
         <div>
-          <label htmlFor="body" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="body"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Report Body*
           </label>
           <textarea
@@ -454,7 +541,7 @@ const InternshipDashboard = () => {
               { id: 3, name: "Data Structures" },
               { id: 4, name: "Web Development" },
               { id: 5, name: "Mobile Development" },
-              { id: 6, name: "Computer Networks" }
+              { id: 6, name: "Computer Networks" },
             ].map((course) => (
               <div key={course.id} className="flex items-center">
                 <input
@@ -466,7 +553,10 @@ const InternshipDashboard = () => {
                   onChange={handleCheckboxChange}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
-                <label htmlFor={`course${course.id}`} className="ml-2 text-gray-700">
+                <label
+                  htmlFor={`course${course.id}`}
+                  className="ml-2 text-gray-700"
+                >
                   {course.name}
                 </label>
               </div>
@@ -475,11 +565,15 @@ const InternshipDashboard = () => {
         </div>
 
         <div className="flex justify-end space-x-3">
-          <Button variant="secondary" type="button" onClick={() => setIsModalOpen(false)}>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => setIsModalOpen(false)}
+          >
             Cancel
           </Button>
           <Button variant="primary" type="submit">
-            {initialData.id ? 'Update Report' : 'Create Report'}
+            {initialData.id ? "Update Report" : "Create Report"}
           </Button>
         </div>
       </form>
@@ -492,7 +586,9 @@ const InternshipDashboard = () => {
       <div className="bg-blue-600 text-white p-6">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-bold">Internship Dashboard</h1>
-          <p className="mt-2">Manage your internship reports and access helpful resources</p>
+          <p className="mt-2">
+            Manage your internship reports and access helpful resources
+          </p>
         </div>
       </div>
 
@@ -503,21 +599,21 @@ const InternshipDashboard = () => {
           <div className="flex border-b border-gray-200">
             <button
               className={`py-4 px-6 text-sm font-medium focus:outline-none ${
-                activeTab === 'reports'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                activeTab === "reports"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
-              onClick={() => setActiveTab('reports')}
+              onClick={() => setActiveTab("reports")}
             >
               My Reports
             </button>
             <button
               className={`py-4 px-6 text-sm font-medium focus:outline-none ${
-                activeTab === 'resources'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                activeTab === "resources"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
-              onClick={() => setActiveTab('resources')}
+              onClick={() => setActiveTab("resources")}
             >
               Resources
             </button>
@@ -525,13 +621,16 @@ const InternshipDashboard = () => {
         </div>
 
         {/* Reports Tab */}
-        {activeTab === 'reports' && (
+        {activeTab === "reports" && (
           <>
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
                   <div className="w-full sm:w-64">
-                    <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="search"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Search Reports
                     </label>
                     <Input
@@ -542,9 +641,12 @@ const InternshipDashboard = () => {
                       className="w-full"
                     />
                   </div>
-                  
+
                   <div className="w-full sm:w-48">
-                    <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="status"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Filter by Status
                     </label>
                     <div className="relative">
@@ -561,14 +663,22 @@ const InternshipDashboard = () => {
                         <option value="flagged">Flagged</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <svg
+                          className="fill-current h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                        >
                           <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                         </svg>
                       </div>
                     </div>
                   </div>
                 </div>
-                <Button variant="primary" onClick={handleCreateReport} className="mt-7 sm:mt-0">
+                <Button
+                  variant="primary"
+                  onClick={handleCreateReport}
+                  className="mt-7 sm:mt-0"
+                >
                   Create New Report
                 </Button>
               </div>
@@ -581,65 +691,97 @@ const InternshipDashboard = () => {
             ) : filteredReports.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredReports.map((report) => (
-                  <div key={report.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                  <div
+                    key={report.id}
+                    className="bg-white rounded-lg shadow-md overflow-hidden"
+                  >
                     <div className="p-6">
                       <div className="flex items-start justify-between">
-                        <h3 className="text-lg font-bold mb-1 text-gray-800">{report.title}</h3>
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(report.status)}`}>
+                        <h3 className="text-lg font-bold mb-1 text-gray-800">
+                          {report.title}
+                        </h3>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(
+                            report.status
+                          )}`}
+                        >
                           {formatStatusText(report.status)}
                         </span>
                       </div>
-                      
+
                       <p className="text-sm text-gray-600 mb-2">
                         {report.companyName} | {report.jobTitle}
                       </p>
-                      
+
                       <p className="text-xs text-gray-500 mb-4">
-                        Submitted: {new Date(report.submissionDate).toLocaleDateString()}
+                        Submitted:{" "}
+                        {new Date(report.submissionDate).toLocaleDateString()}
                       </p>
-                      
+
                       <p className="text-gray-700 mb-4 line-clamp-3">
                         {report.introduction}
                       </p>
 
                       <div className="mt-4 grid grid-cols-2 gap-2">
-                        <Button 
-                          variant="primary" 
+                        <Button
+                          variant="primary"
                           size="md"
                           onClick={() => handleViewReport(report.id)}
                           className="py-2 px-2 text-sm"
                         >
                           View Report
                         </Button>
-                        
-                        {report.status === 'pending' ? (
-                          <Button 
+
+                        {report.status === "pending" ? (
+                          <Button
                             variant="secondary"
-                            size="md" 
+                            size="md"
                             onClick={() => handleEditReport(report.id)}
                             className="py-2 px-2 text-sm"
                           >
                             Edit Report
                           </Button>
                         ) : (
-                          <Button 
+                          <Button
                             variant="outline"
-                            size="md" 
+                            size="md"
                             onClick={() => handlePrintPDF(report.id)}
                             className="py-2 px-2 text-sm"
                           >
                             Download PDF
                           </Button>
                         )}
-                        
-                        {report.status === 'pending' && (
-                          <Button 
+
+                        {report.status === "pending" ? (
+                          // For pending reports, show both Download and Delete buttons
+                          <>
+                            <Button
+                              variant="outline"
+                              size="md"
+                              onClick={() => handlePrintPDF(report.id)}
+                              className="py-2 px-2 text-sm"
+                            >
+                              Download PDF
+                            </Button>
+
+                            <Button
+                              variant="outline"
+                              size="md"
+                              onClick={() => handleDeleteClick(report.id)}
+                              className="py-2 px-2 text-sm text-red-600 hover:bg-red-50"
+                            >
+                              Delete Report
+                            </Button>
+                          </>
+                        ) : (
+                          // For non-pending reports, show only the Delete button (full width)
+                          <Button
                             variant="outline"
-                            size="md" 
-                            onClick={() => handlePrintPDF(report.id)}
-                            className="py-2 px-2 text-sm col-span-2"
+                            size="md"
+                            onClick={() => handleDeleteClick(report.id)}
+                            className="py-2 px-2 text-sm text-red-600 hover:bg-red-50 col-span-2"
                           >
-                            Download PDF
+                            Delete Report
                           </Button>
                         )}
                       </div>
@@ -649,13 +791,15 @@ const InternshipDashboard = () => {
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">No reports found</h3>
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                  No reports found
+                </h3>
                 <p className="text-gray-500 mb-6">
-                  {searchTerm || statusFilter !== 'all' 
-                    ? "Try adjusting your search filters" 
+                  {searchTerm || statusFilter !== "all"
+                    ? "Try adjusting your search filters"
                     : "You haven't created any internship reports yet"}
                 </p>
-                {!searchTerm && statusFilter === 'all' && (
+                {!searchTerm && statusFilter === "all" && (
                   <Button variant="primary" onClick={handleCreateReport}>
                     Create Your First Report
                   </Button>
@@ -666,13 +810,15 @@ const InternshipDashboard = () => {
         )}
 
         {/* Resources Tab */}
-        {activeTab === 'resources' && (
+        {activeTab === "resources" && (
           <>
             {/* Featured Video */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Featured: Qualifying Internships for Your Major</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                Featured: Qualifying Internships for Your Major
+              </h2>
               <div className="aspect-w-16 aspect-h-9">
-                <iframe 
+                <iframe
                   className="w-full h-96 rounded-lg shadow-md"
                   src="https://www.youtube.com/embed/tLjROy6rNcU"
                   title="Qualifying Internships for Your Major"
@@ -682,12 +828,25 @@ const InternshipDashboard = () => {
                 ></iframe>
               </div>
               <p className="mt-4 text-lg text-gray-700">
-                This comprehensive guide explains the criteria for internships that qualify for academic credit in Computer Science 
-                and related majors. Learn about the types of companies, roles, and responsibilities that meet department requirements.
+                This comprehensive guide explains the criteria for internships
+                that qualify for academic credit in Computer Science and related
+                majors. Learn about the types of companies, roles, and
+                responsibilities that meet department requirements.
               </p>
               <div className="mt-6 flex items-center text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5 mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span>14:35</span>
                 <span className="mx-3">•</span>
@@ -700,43 +859,43 @@ const InternshipDashboard = () => {
               <div className="flex border-b border-gray-200">
                 <button
                   className={`py-4 px-6 text-sm font-medium focus:outline-none ${
-                    activeResourceTab === 'videos'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-500 hover:text-gray-700'
+                    activeResourceTab === "videos"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
                   }`}
-                  onClick={() => setActiveResourceTab('videos')}
+                  onClick={() => setActiveResourceTab("videos")}
                 >
                   Videos
                 </button>
                 <button
                   className={`py-4 px-6 text-sm font-medium focus:outline-none ${
-                    activeResourceTab === 'documents'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-500 hover:text-gray-700'
+                    activeResourceTab === "documents"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
                   }`}
-                  onClick={() => setActiveResourceTab('documents')}
+                  onClick={() => setActiveResourceTab("documents")}
                 >
                   Documents
                 </button>
                 <button
                   className={`py-4 px-6 text-sm font-medium focus:outline-none ${
-                    activeResourceTab === 'links'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-500 hover:text-gray-700'
+                    activeResourceTab === "links"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
                   }`}
-                  onClick={() => setActiveResourceTab('links')}
+                  onClick={() => setActiveResourceTab("links")}
                 >
                   Helpful Links
                 </button>
               </div>
-              
+
               <div className="p-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {resources[activeResourceTab].map(resource => (
-                    <ResourceCard 
-                      key={resource.id} 
-                      resource={resource} 
-                      type={activeResourceTab} 
+                  {resources[activeResourceTab].map((resource) => (
+                    <ResourceCard
+                      key={resource.id}
+                      resource={resource}
+                      type={activeResourceTab}
                     />
                   ))}
                 </div>
@@ -745,14 +904,19 @@ const InternshipDashboard = () => {
 
             {/* Need Help Section */}
             <div className="bg-white rounded-lg shadow-md p-6 mt-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Need Help?</h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-4">
+                Need Help?
+              </h2>
               <p className="text-gray-700 mb-4">
-                If you have questions about internship requirements or resources, please contact the department's 
-                internship coordinator or visit office hours.
+                If you have questions about internship requirements or
+                resources, please contact the department's internship
+                coordinator or visit office hours.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-gray-800">Internship Coordinator</h3>
+                  <h3 className="font-medium text-gray-800">
+                    Internship Coordinator
+                  </h3>
                   <p className="text-gray-600">Dr. Jane Smith</p>
                   <p className="text-gray-600">Email: jsmith@university.edu</p>
                   <p className="text-gray-600">Office: Tech Building 305</p>
@@ -788,13 +952,18 @@ const InternshipDashboard = () => {
         footer={
           <div className="flex justify-between">
             <div>
-              {currentReport && (currentReport.status === 'flagged' || currentReport.status === 'rejected') && (
-                <Button variant="primary" onClick={handleAppeal}>
-                  Appeal Report Status
-                </Button>
-              )}
+              {currentReport &&
+                (currentReport.status === "flagged" ||
+                  currentReport.status === "rejected") && (
+                  <Button variant="primary" onClick={handleAppeal}>
+                    Appeal Report Status
+                  </Button>
+                )}
             </div>
-            <Button variant="secondary" onClick={() => setIsViewModalOpen(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setIsViewModalOpen(false)}
+            >
               Close
             </Button>
           </div>
@@ -808,11 +977,16 @@ const InternshipDashboard = () => {
                 {currentReport.companyName} | {currentReport.jobTitle}
               </p>
               <div className="flex items-center mt-2">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(currentReport.status)}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                    currentReport.status
+                  )}`}
+                >
                   {formatStatusText(currentReport.status)}
                 </span>
                 <span className="text-gray-500 text-xs ml-2">
-                  Submitted: {new Date(currentReport.submissionDate).toLocaleDateString()}
+                  Submitted:{" "}
+                  {new Date(currentReport.submissionDate).toLocaleDateString()}
                 </span>
               </div>
             </div>
@@ -820,12 +994,16 @@ const InternshipDashboard = () => {
             {currentReport.appealMessage && (
               <div className="bg-blue-50 border border-blue-200 rounded p-3">
                 <p className="font-semibold text-blue-800">Appeal Submitted</p>
-                <p className="text-sm text-gray-700">{currentReport.appealMessage}</p>
-                <p className="text-xs text-gray-500 mt-1">Date: {currentReport.appealDate}</p>
+                <p className="text-sm text-gray-700">
+                  {currentReport.appealMessage}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Date: {currentReport.appealDate}
+                </p>
               </div>
             )}
 
-            {currentReport.comments && currentReport.status !== 'accepted' && (
+            {currentReport.comments && currentReport.status !== "accepted" && (
               <div className="bg-gray-50 border-l-4 border-gray-300 p-3">
                 <p className="font-semibold">Reviewer Feedback:</p>
                 <p className="text-gray-700">{currentReport.comments}</p>
@@ -845,12 +1023,24 @@ const InternshipDashboard = () => {
             <div>
               <h4 className="font-semibold">Helpful Courses</h4>
               <ul className="list-disc pl-5 text-gray-700">
-                {currentReport.helpfulCourses.includes(1) && <li>Software Engineering</li>}
-                {currentReport.helpfulCourses.includes(2) && <li>Database Systems</li>}
-                {currentReport.helpfulCourses.includes(3) && <li>Data Structures</li>}
-                {currentReport.helpfulCourses.includes(4) && <li>Web Development</li>}
-                {currentReport.helpfulCourses.includes(5) && <li>Mobile Development</li>}
-                {currentReport.helpfulCourses.includes(6) && <li>Computer Networks</li>}
+                {currentReport.helpfulCourses.includes(1) && (
+                  <li>Software Engineering</li>
+                )}
+                {currentReport.helpfulCourses.includes(2) && (
+                  <li>Database Systems</li>
+                )}
+                {currentReport.helpfulCourses.includes(3) && (
+                  <li>Data Structures</li>
+                )}
+                {currentReport.helpfulCourses.includes(4) && (
+                  <li>Web Development</li>
+                )}
+                {currentReport.helpfulCourses.includes(5) && (
+                  <li>Mobile Development</li>
+                )}
+                {currentReport.helpfulCourses.includes(6) && (
+                  <li>Computer Networks</li>
+                )}
               </ul>
             </div>
           </div>
@@ -864,7 +1054,8 @@ const InternshipDashboard = () => {
       >
         <div className="space-y-4">
           <p className="text-gray-600">
-            Please provide additional information or clarification about why you believe this report should be reconsidered:
+            Please provide additional information or clarification about why you
+            believe this report should be reconsidered:
           </p>
           <textarea
             className="w-full h-32 border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -873,11 +1064,42 @@ const InternshipDashboard = () => {
             placeholder="Explain why you're appealing this decision..."
           ></textarea>
           <div className="flex justify-end space-x-3">
-            <Button variant="secondary" onClick={() => setIsAppealModalOpen(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setIsAppealModalOpen(false)}
+            >
               Cancel
             </Button>
             <Button variant="primary" onClick={handleAppealSubmit}>
               Submit Appeal
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Report"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            Are you sure you want to delete the report "{reportToDelete?.title}
+            "? This action cannot be undone.
+          </p>
+          <div className="flex justify-end space-x-3">
+            <Button
+              variant="secondary"
+              onClick={() => setIsDeleteModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete Report
             </Button>
           </div>
         </div>
@@ -889,7 +1111,8 @@ const InternshipDashboard = () => {
           body * {
             visibility: hidden;
           }
-          .print-content, .print-content * {
+          .print-content,
+          .print-content * {
             visibility: visible;
           }
           .print-content {
@@ -909,28 +1132,41 @@ const InternshipDashboard = () => {
               {currentReport.companyName} | {currentReport.jobTitle}
             </p>
             <p className="text-gray-600 mb-6">
-              Submitted: {new Date(currentReport.submissionDate).toLocaleDateString()}
+              Submitted:{" "}
+              {new Date(currentReport.submissionDate).toLocaleDateString()}
             </p>
-            
+
             <div className="mb-6">
               <h2 className="text-2xl font-semibold mb-2">Introduction</h2>
               <p className="text-lg">{currentReport.introduction}</p>
             </div>
-            
+
             <div className="mb-6">
               <h2 className="text-2xl font-semibold mb-2">Report Details</h2>
               <p className="text-lg">{currentReport.body}</p>
             </div>
-            
+
             <div>
               <h2 className="text-2xl font-semibold mb-2">Helpful Courses</h2>
               <ul className="list-disc pl-8">
-                {currentReport.helpfulCourses.includes(1) && <li className="text-lg">Software Engineering</li>}
-                {currentReport.helpfulCourses.includes(2) && <li className="text-lg">Database Systems</li>}
-                {currentReport.helpfulCourses.includes(3) && <li className="text-lg">Data Structures</li>}
-                {currentReport.helpfulCourses.includes(4) && <li className="text-lg">Web Development</li>}
-                {currentReport.helpfulCourses.includes(5) && <li className="text-lg">Mobile Development</li>}
-                {currentReport.helpfulCourses.includes(6) && <li className="text-lg">Computer Networks</li>}
+                {currentReport.helpfulCourses.includes(1) && (
+                  <li className="text-lg">Software Engineering</li>
+                )}
+                {currentReport.helpfulCourses.includes(2) && (
+                  <li className="text-lg">Database Systems</li>
+                )}
+                {currentReport.helpfulCourses.includes(3) && (
+                  <li className="text-lg">Data Structures</li>
+                )}
+                {currentReport.helpfulCourses.includes(4) && (
+                  <li className="text-lg">Web Development</li>
+                )}
+                {currentReport.helpfulCourses.includes(5) && (
+                  <li className="text-lg">Mobile Development</li>
+                )}
+                {currentReport.helpfulCourses.includes(6) && (
+                  <li className="text-lg">Computer Networks</li>
+                )}
               </ul>
             </div>
           </div>
