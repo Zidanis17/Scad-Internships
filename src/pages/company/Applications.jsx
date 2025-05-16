@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
 import Table from '../../components/common/Table';
+import { jsPDF } from 'jspdf';
 
 // Dummy data for applications
 const dummyApplicationsData = [
@@ -239,6 +240,109 @@ const Applications = () => {
     }
   };
 
+  // Function to generate a dummy CV PDF
+  const generateDummyCV = (document, student) => {
+    const doc = new jsPDF();
+    const docType = document.name.toLowerCase().includes('portfolio') ? 'portfolio' : 'cv';
+    
+    // Add header
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text(student.studentName, 105, 20, { align: 'center' });
+    
+    // Add contact info
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Email: ${student.contactEmail}`, 105, 30, { align: 'center' });
+    doc.text(`Phone: ${student.contactPhone}`, 105, 35, { align: 'center' });
+    doc.text(`Student ID: ${student.studentId}`, 105, 40, { align: 'center' });
+    
+    // Add horizontal line
+    doc.setDrawColor(0, 0, 0);
+    doc.line(20, 45, 190, 45);
+    
+    // Education section
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Education', 20, 55);
+    
+    doc.setFontSize(12);
+    doc.text('German University in Cairo', 20, 65);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(`Major: ${student.major}`, 20, 70);
+    doc.text(`Semester: ${student.semester}`, 20, 75);
+    doc.text(`GPA: ${student.gpa}`, 20, 80);
+    
+    // Skills section
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Skills', 20, 95);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    let yPos = 105;
+    student.skills.forEach(skill => {
+      doc.text(`• ${skill}`, 20, yPos);
+      yPos += 5;
+    });
+    
+    // Experience or Projects section (depending on document type)
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    yPos += 10;
+    
+    if (docType === 'portfolio') {
+      doc.text('Projects', 20, yPos);
+      yPos += 10;
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Project 1: E-commerce Website', 20, yPos);
+      yPos += 5;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Developed a full-stack e-commerce platform using React and Node.js.', 20, yPos);
+      yPos += 10;
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Project 2: Mobile Application', 20, yPos);
+      yPos += 5;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Created a cross-platform mobile app using React Native.', 20, yPos);
+      
+    } else {
+      doc.text('Experience', 20, yPos);
+      yPos += 10;
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Intern Developer, Tech Company', 20, yPos);
+      yPos += 5;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('June 2024 - August 2024', 20, yPos);
+      yPos += 5;
+      doc.text('• Assisted in developing web applications using modern frameworks', 20, yPos);
+      yPos += 5;
+      doc.text('• Collaborated with team members on feature implementation', 20, yPos);
+      yPos += 5;
+      doc.text('• Participated in daily stand-up meetings and sprint planning', 20, yPos);
+    }
+    
+    // Add footer
+    doc.setFontSize(8);
+    doc.text(`Generated on ${new Date().toLocaleDateString()} - Dummy ${docType.toUpperCase()} for ${student.studentName}`, 105, 280, { align: 'center' });
+    
+    // Save and download the PDF
+    doc.save(`${student.studentName.replace(/\s+/g, '_')}_${docType}.pdf`);
+  };
+
   const getStatusBadgeClass = (status) => {
     switch (status) {
       case 'Pending':
@@ -408,6 +512,7 @@ const Applications = () => {
                   <Button 
                     variant="primary" 
                     size="small"
+                    onClick={() => generateDummyCV(doc, selectedApplication)}
                   >
                     Download
                   </Button>

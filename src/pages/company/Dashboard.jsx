@@ -150,6 +150,7 @@ const dummyRecentApplications = [
     studentName: 'Ahmed Hassan',
     major: 'Computer Science',
     position: 'Software Engineering Intern',
+    postID: 1,
     appliedDate: '2025-05-10',
     status: 'Pending'
   },
@@ -158,6 +159,7 @@ const dummyRecentApplications = [
     studentName: 'Sara Mohamed',
     major: 'Business Informatics',
     position: 'UI/UX Design Intern',
+    postID: 2,
     appliedDate: '2025-05-09',
     status: 'Finalized'
   },
@@ -166,6 +168,7 @@ const dummyRecentApplications = [
     studentName: 'Yousef Ali',
     major: 'Computer Engineering',
     position: 'Software Engineering Intern',
+    postID: 1,
     appliedDate: '2025-05-08',
     status: 'Finalized'
   }
@@ -323,6 +326,24 @@ const Dashboard = () => {
     setUnreadNotifications(0);
   };
 
+  const simulateEmailNotification = (application) => {
+  // In a real app, this would call an API to send an email
+  console.log(`Email notification sent for application: ${application.studentName}`);
+  success(`Email notification sent to company email regarding ${application.studentName}'s application`);
+  
+  // Store the email notification in local storage to simulate inbox
+  const emailNotifications = JSON.parse(localStorage.getItem('emailNotifications') || '[]');
+  const newEmail = {
+    id: Date.now(),
+    subject: `New Application: ${application.studentName} for ${application.position}`,
+    content: `${application.studentName} (${application.major}) has applied for the "${application.position}" position.`,
+    date: new Date().toISOString(),
+    read: false
+  };
+  emailNotifications.push(newEmail);
+  localStorage.setItem('emailNotifications', JSON.stringify(emailNotifications));
+};
+
   const handleNotificationAction = (action) => {
     console.log(`Action triggered: ${action.action}`);
     // Close the modal
@@ -387,12 +408,70 @@ const Dashboard = () => {
     setSelectedPost(null);
     setIsFormModalOpen(true);
   };
+  const handleNewApplication = (position) => {
+  // Find the post
+  const post = internshipPosts.find(p => p.title === position);
+  if (!post) return;
+  
+  // Create a new dummy application
+  const newApplication = {
+    id: Math.max(...recentApplications.map(app => app.id), 0) + 1,
+    studentName: `Applicant ${Math.floor(Math.random() * 1000)}`,
+    major: 'Computer Science',
+    position: position,
+    appliedDate: new Date().toISOString().split('T')[0],
+    status: 'Pending'
+  };
+  
+  // Add to recent applications
+  setRecentApplications([newApplication, ...recentApplications]);
+  
+  // Update application count for the post
+  const updatedPosts = internshipPosts.map(p => 
+    p.id === post.id ? {...p, applicationsCount: p.applicationsCount + 1} : p
+  );
+  setInternshipPosts(updatedPosts);
+  
+  // Create notification
+  const newNotification = {
+    id: Math.max(...company.notifications.map(n => n.id), 0) + 1,
+    type: 'application',
+    title: 'New Application Received',
+    message: `${newApplication.studentName} has applied for "${position}" position.`,
+    date: new Date().toISOString().split('T')[0],
+    read: false,
+    details: `${newApplication.studentName} (${newApplication.major}) has applied for the "${position}" position. Their application includes relevant skills and experience. They are available to start immediately.`,
+    actions: [
+      { 
+        label: 'Review Application', 
+        action: 'view',
+        path: '/company/applications'
+      }
+    ]
+  };
+  
+  // Add notification to company
+  const updatedNotifications = [newNotification, ...company.notifications];
+  setCompany({
+    ...company,
+    notifications: updatedNotifications
+  });
+  setUnreadNotifications(updatedNotifications.filter(n => !n.read).length);
+  
+  // Simulate email notification
+  simulateEmailNotification(newApplication);
+  
+  // Show success toast
+  success(`New application received from ${newApplication.studentName}`);
+};
 
   const handleAcceptIntern = (applicationId) => {
     // Find the application
     const application = recentApplications.find(app => app.id === applicationId);
     if (!application) return;
 
+    // Simulate sending email notification
+    simulateEmailNotification(application);
     // Remove application from recentApplications
     const updatedApplications = recentApplications.filter(app => app.id !== applicationId);
     setRecentApplications(updatedApplications);
@@ -642,6 +721,16 @@ const Dashboard = () => {
                         View Applications
                       </Button>
                     </Link>
+                    {/* Add inside the post rendering section, next to the "View Applications" button */}
+<Button 
+  className="bg-green-600 text-white hover:bg-green-700 text-sm py-1"
+  onClick={(e) => {
+    e.preventDefault(); // Prevent any link navigation
+    handleNewApplication(post.title);
+  }}
+>
+  Simulate New Applicant
+</Button>
                   </div>
                 </div>
               ))}
@@ -801,7 +890,7 @@ const Dashboard = () => {
                       </span>
                     </div>
                     <div className="mt-3 flex space-x-2">
-                      <Link to={`/company/applications/${application.id}`}>
+                      <Link to={`/company/applications/?post=${application.id}`}>
                         <Button className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm py-1">
                           Review Application
                         </Button>

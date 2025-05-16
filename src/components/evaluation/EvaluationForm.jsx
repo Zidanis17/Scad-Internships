@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Button from '../common/Button';
+import jsPDF from 'jspdf';
 
 const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company', onDeleteEvaluation }) => {
   const [formData, setFormData] = useState({
@@ -29,13 +30,90 @@ const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company'
     onSubmit(formData);
   };
 
-const handleDelete = () => {
-  if (typeof window.onDeleteEvaluation === 'function') {
-    window.onDeleteEvaluation();
-  } else if (onDeleteEvaluation) {
-    onDeleteEvaluation();
-  }
-};
+  const handleDelete = () => {
+    if (typeof window.onDeleteEvaluation === 'function') {
+      window.onDeleteEvaluation();
+    } else if (onDeleteEvaluation) {
+      onDeleteEvaluation();
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    
+    // Set font size and styling
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    
+    // Title
+    const title = evaluationType === 'company' 
+      ? 'Internship Evaluation Report' 
+      : 'Student Performance Evaluation';
+    doc.text(title, 105, 20, { align: 'center' });
+    
+    // Reset font for body text
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    
+    // Add content
+    let yPosition = 40;
+    const leftMargin = 20;
+    const lineHeight = 8;
+    
+    // Company name
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Company: ${formData.companyName}`, leftMargin, yPosition);
+    yPosition += lineHeight * 2;
+    
+    // Rating
+    doc.text(`Overall Rating: ${formData.rating}/5`, leftMargin, yPosition);
+    yPosition += lineHeight * 2;
+    
+    // Strengths
+    doc.text(evaluationType === 'company' ? 'Strengths of the Internship:' : 'Student Strengths:', leftMargin, yPosition);
+    doc.setFont('helvetica', 'normal');
+    yPosition += lineHeight;
+    
+    // Handle multi-line text
+    const strengthLines = doc.splitTextToSize(formData.strengths || 'None provided', 170);
+    doc.text(strengthLines, leftMargin, yPosition);
+    yPosition += (strengthLines.length * lineHeight) + lineHeight;
+    
+    // Areas for Improvement
+    doc.setFont('helvetica', 'bold');
+    doc.text(evaluationType === 'company' ? 'Areas for Improvement:' : 'Areas for Student Development:', leftMargin, yPosition);
+    doc.setFont('helvetica', 'normal');
+    yPosition += lineHeight;
+    
+    const improvementLines = doc.splitTextToSize(formData.areasForImprovement || 'None provided', 170);
+    doc.text(improvementLines, leftMargin, yPosition);
+    yPosition += (improvementLines.length * lineHeight) + lineHeight;
+    
+    // Additional Comments
+    doc.setFont('helvetica', 'bold');
+    doc.text('Additional Comments:', leftMargin, yPosition);
+    doc.setFont('helvetica', 'normal');
+    yPosition += lineHeight;
+    
+    const commentLines = doc.splitTextToSize(formData.comments || 'None provided', 170);
+    doc.text(commentLines, leftMargin, yPosition);
+    yPosition += (commentLines.length * lineHeight) + lineHeight;
+    
+    // Recommendation (for company evaluations only)
+    if (evaluationType === 'company') {
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Recommendation: ${formData.recommended ? 'Recommended for future students' : 'Not recommended for future students'}`, leftMargin, yPosition);
+      yPosition += lineHeight * 2;
+    }
+    
+    // Add date at the bottom
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, leftMargin, 280);
+    
+    // Save the PDF
+    doc.save(`${evaluationType === 'company' ? 'Internship' : 'Student'}_Evaluation_${formData.companyName}.pdf`);
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold">
@@ -147,6 +225,14 @@ const handleDelete = () => {
       )}
 
       <div className="flex justify-end space-x-4">
+        <Button 
+          variant="secondary" 
+          className="bg-green-600 text-white hover:bg-green-700"
+          onClick={handleDownloadPDF}
+        >
+          Download Evaluation
+        </Button>
+        
         {initialData.rating && (
           <Button
             variant="danger"
@@ -156,6 +242,7 @@ const handleDelete = () => {
             Delete Evaluation
           </Button>
         )}
+        
         <Button variant="primary" onClick={handleSubmit}>
           Submit Evaluation
         </Button>
