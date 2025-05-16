@@ -17,7 +17,7 @@ const companySizes = [
 // Replace these with your EmailJS credentials
 const EMAILJS_USER_ID = 'xgaCI-VQn7vcGdf6t';
 const EMAILJS_SERVICE_ID = 'service_mg5s3up';
-const EMAILJS_TEMPLATE_ID = 'template_iefoeys';
+const EMAILJS_TEMPLATE_ID = 'template_smfi2yr';
 
 const CompanyRegistration = () => {
   const [formData, setFormData] = useState({
@@ -99,7 +99,8 @@ const CompanyRegistration = () => {
     // Set up email details for application submission
     const templateParams = {
       name: "SCAD OFFICE",
-      email: formData.email,
+      subject: "New Company registration",
+      email: "isozidan11@gmail.com",
       company_name: formData.name,
       industry: formData.industry,
       company_size: formData.size,
