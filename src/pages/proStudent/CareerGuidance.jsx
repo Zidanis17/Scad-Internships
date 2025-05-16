@@ -123,6 +123,10 @@ const CareerGuidance = () => {
     
     // Show success message
     success('Appointment requested successfully');
+
+    setTimeout(() =>{
+      success('Appointment accepted');
+    }, 1000)
   };
 
   const handleAcceptAppointment = (id) => {

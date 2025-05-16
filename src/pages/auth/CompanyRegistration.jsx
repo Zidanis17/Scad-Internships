@@ -15,7 +15,7 @@ const companySizes = [
 // Replace these with your EmailJS credentials
 const EMAILJS_USER_ID = 'xgaCI-VQn7vcGdf6t';
 const EMAILJS_SERVICE_ID = 'service_mg5s3up';
-const EMAILJS_TEMPLATE_ID = 'template_smfi2yr';
+const EMAILJS_TEMPLATE_ID = 'template_iefoeys';
 
 const CompanyRegistration = () => {
   const [formData, setFormData] = useState({
@@ -49,9 +49,11 @@ const CompanyRegistration = () => {
 
     // Set up email details
     const templateParams = {
-      to_email: formData.email,
+      name:"SCAD OFFICE",
+      email: formData.email,
       company_name: formData.name,
     };
+    console.log(formData.email)
 
     // Send the email automatically with EmailJS
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_USER_ID)

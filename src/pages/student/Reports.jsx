@@ -72,14 +72,14 @@ const InternshipDashboard = () => {
         id: 1,
         title: "Qualifying Internships for Your Major",
         description: "Learn about the criteria for internships that qualify for academic credit in Computer Science and related fields.",
-        youtubeId: "jNQXAC9IVRw",
+        youtubeId: "tLjROy6rNcU",
         duration: "14:35"
       },
       {
         id: 2,
         title: "How to Secure a Technical Internship",
         description: "Tips and strategies for landing competitive internships in the tech industry.",
-        youtubeId: "dQw4w9WgXcQ",
+        youtubeId: "PdFP9IanGHQ",
         duration: "22:18"
       }
     ],
@@ -674,7 +674,7 @@ const InternshipDashboard = () => {
               <div className="aspect-w-16 aspect-h-9">
                 <iframe 
                   className="w-full h-96 rounded-lg shadow-md"
-                  src="https://www.youtube.com/embed/jNQXAC9IVRw"
+                  src="https://www.youtube.com/embed/tLjROy6rNcU"
                   title="Qualifying Internships for Your Major"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

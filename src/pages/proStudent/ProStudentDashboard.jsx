@@ -909,14 +909,18 @@ const UnifiedDashboard = () => {
     if (action.path) navigate(action.path);
   };
 
-  const handleDeleteEvaluation = (internship) => {
-    if (window.confirm('Are you sure you want to delete this evaluation?')) {
-      const updatedInternships = student.previousInternships.map(intern =>
-        intern.id === internship.id ? { ...intern, evaluation: null } : intern
-      );
-      setStudent({ ...student, previousInternships: updatedInternships });
-    }
-  };
+const handleDeleteEvaluation = (internship) => {
+  if (window.confirm('Are you sure you want to delete this evaluation?')) {
+    const updatedInternships = student.previousInternships.map(intern =>
+      intern.id === internship.id ? { ...intern, evaluation: null } : intern
+    );
+    setStudent({ ...student, previousInternships: updatedInternships });
+  }
+};
+
+
+
+
 
   return (
     <div className="bg-gray-50 min-h-screen pb-8">
