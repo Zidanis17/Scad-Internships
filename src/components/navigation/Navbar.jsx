@@ -145,7 +145,7 @@ const Navbar = () => {
             type: 'links',
             items: [
               { name: 'Student Management', path: '/scad/student-management'},
-              { name: 'Report Reviews', path: '/faculty/report-reviews' },
+              { name: 'Report Reviews', path: '/scad/report-reviews' },
             ]
           },
           {
