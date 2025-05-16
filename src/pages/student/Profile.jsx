@@ -93,7 +93,7 @@ const dummyInternships = [
     postedAt: '2025-04-10',
     startDate: '2025-07-01',
     endDate: '2025-09-30',
-    applicationStatus: 'Applied',
+    applicationStatus: 'Accepted',
     applicationDetails: { coverLetter: 'software_cover.pdf', cv: 'software_cv.pdf' },
   },
   {
@@ -183,7 +183,7 @@ const dummyInternships = [
     postedAt: '2025-04-15',
     startDate: '2025-06-15',
     endDate: '2025-09-15',
-    applicationStatus: 'Rejected',
+    applicationStatus: 'Accepted',
     applicationDetails: { coverLetter: 'frontend_cover.pdf', cv: 'frontend_cv.pdf' },
   },
 ];
