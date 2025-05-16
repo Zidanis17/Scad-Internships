@@ -911,7 +911,7 @@ const Profile = () => {
                     placeholder="Add job interest"
                     className="flex-1"
                   />
-                  <Button type="submit">Add</Button>
+                  <Button type="submit" className='h-10'>Add</Button>
                 </form>
               </div>
               <div>
@@ -946,7 +946,7 @@ const Profile = () => {
                       <option value="Advanced">Advanced</option>
                     </select>
                   </div>
-                  <Button type="submit">Add Skill</Button>
+                  <Button type="submit" className='h-10'>Add Skill</Button>
                 </form>
               </div>
             </div>
