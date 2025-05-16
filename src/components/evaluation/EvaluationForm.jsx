@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from '../common/Button';
 
-const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company' }) => {
+const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company', onDeleteEvaluation }) => {
   const [formData, setFormData] = useState({
     companyName: initialData.companyName || '', // Add companyName to state
     rating: initialData.rating || 3,
@@ -29,6 +29,13 @@ const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company'
     onSubmit(formData);
   };
 
+const handleDelete = () => {
+  if (typeof window.onDeleteEvaluation === 'function') {
+    window.onDeleteEvaluation();
+  } else if (onDeleteEvaluation) {
+    onDeleteEvaluation();
+  }
+};
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold">
@@ -144,11 +151,7 @@ const EvaluationForm = ({ onSubmit, initialData = {}, evaluationType = 'company'
           <Button
             variant="danger"
             className="bg-red-600 text-white hover:bg-red-700"
-            onClick={() => {
-              if (window.onDeleteEvaluation) {
-                window.onDeleteEvaluation();
-              }
-            }}
+            onClick={handleDelete}
           >
             Delete Evaluation
           </Button>

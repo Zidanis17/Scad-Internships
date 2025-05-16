@@ -518,22 +518,20 @@ const Interns = () => {
   };
 
   // Modified EvaluationForm view to include Delete button
-   const renderEvaluationContent = () => {
-    if (!selectedIntern) return null;
+const renderEvaluationContent = () => {
+  if (!selectedIntern) return null;
 
-    // Set up a global handler for the delete button in the evaluation form
-    window.onDeleteEvaluation = handleOpenDeleteConfirm;
-
-    return (
-      <div>
-        <EvaluationForm 
-          onSubmit={handleSubmitEvaluation}
-          initialData={selectedIntern.evaluation || {companyName: companyName}}
-          evaluationType='Student'
-        />
-      </div>
-    );
-  };
+  return (
+    <div>
+      <EvaluationForm 
+        onSubmit={handleSubmitEvaluation}
+        initialData={selectedIntern.evaluation || {companyName: companyName}}
+        evaluationType='Student'
+        onDeleteEvaluation={handleOpenDeleteConfirm}
+      />
+    </div>
+  );
+};
 
   return (
     <div className="bg-gray-50 min-h-screen pb-8">

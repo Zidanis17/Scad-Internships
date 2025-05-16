@@ -4,7 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
 import EvaluationForm from '../../components/evaluation/EvaluationForm';
-
+import { useToast } from '../../components/common/ToastContext'; 
 // Dummy data for majors and semesters
 const majorsList = [
   { id: 1, name: 'Computer Science' },
@@ -843,6 +843,7 @@ const MajorSemesterModal = ({ isOpen, onClose, majors, semesters, currentMajorId
 const UnifiedDashboard = () => {
   const { userRole } = useContext(AuthContext);
   const role = userRole;
+  const toast = useToast();
   const [student, setStudent] = useState(null);
   const [suggestedCompanies, setSuggestedCompanies] = useState([]);
   const [recentInternships, setRecentInternships] = useState([]);
@@ -910,14 +911,12 @@ const UnifiedDashboard = () => {
   };
 
 const handleDeleteEvaluation = (internship) => {
-  if (window.confirm('Are you sure you want to delete this evaluation?')) {
-    const updatedInternships = student.previousInternships.map(intern =>
-      intern.id === internship.id ? { ...intern, evaluation: null } : intern
-    );
-    setStudent({ ...student, previousInternships: updatedInternships });
-  }
+  const updatedInternships = student.previousInternships.map(intern =>
+    intern.id === internship.id ? { ...intern, evaluation: null } : intern
+  );
+  setStudent({ ...student, previousInternships: updatedInternships });
+  toast.success(`Evaluation for ${internship.companyName} has been deleted`); // Add this line
 };
-
 
 
 
@@ -1144,49 +1143,55 @@ const handleDeleteEvaluation = (internship) => {
       {selectedNotification && <NotificationModal notification={selectedNotification} onClose={handleModalClose} onAction={handleNotificationAction} />}
       <MajorSemesterModal isOpen={majorSemesterModalOpen} onClose={() => setMajorSemesterModalOpen(false)} majors={majorsList} semesters={semestersList} currentMajorId={student.majorId} currentSemester={student.semester} onSave={handleMajorSemesterChange} />
       {isEvaluationModalOpen && currentInternship && (
-        <Modal
-          isOpen={isEvaluationModalOpen}
-          onClose={() => setIsEvaluationModalOpen(false)}
-          title={`Evaluation for ${currentInternship.companyName}`}
-          
-          footer={
-            currentInternship.evaluation && !isEditing ? (
-              <Button onClick={() => setIsEvaluationModalOpen(false)}>Close</Button>
-            ) : null
-          }
-        >
-          {currentInternship.evaluation && !isEditing ? (
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Evaluation Details</h3>
-              <p><strong>Rating:</strong> {currentInternship.evaluation.companyName} stars</p>
-              <p><strong>Rating:</strong> {currentInternship.evaluation.rating} stars</p>
-              <p><strong>Strengths:</strong> {currentInternship.evaluation.strengths}</p>
-              <p><strong>Areas for Improvement:</strong> {currentInternship.evaluation.areasForImprovement}</p>
-              <p><strong>Comments:</strong> {currentInternship.evaluation.comments}</p>
-              <p><strong>Recommended:</strong> {currentInternship.evaluation.recommended ? 'Yes' : 'No'}</p>
-              <p><strong>Date:</strong> {currentInternship.evaluation.date}</p>
-            </div>
-          ) : (
-            <EvaluationForm
-              onSubmit={(evaluationData) => {
-                const updatedInternships = student.previousInternships.map(intern =>
-                  intern.id === currentInternship.id ? {
-                    ...intern,
-                    evaluation: {
-                      ...evaluationData,
-                      date: new Date().toISOString().split('T')[0]
-                    }
-                  } : intern
-                );
-                setStudent({ ...student, previousInternships: updatedInternships });
-                setIsEvaluationModalOpen(false);
-              }}
-              initialData={currentInternship.evaluation || { companyName: currentInternship.companyName }}
-              evaluationType="company"
-            />
-          )}
-        </Modal>
-      )}
+  <Modal
+    isOpen={isEvaluationModalOpen}
+    onClose={() => setIsEvaluationModalOpen(false)}
+    title={`Evaluation for ${currentInternship.companyName}`}
+    footer={
+      currentInternship.evaluation && !isEditing ? (
+        <Button onClick={() => setIsEvaluationModalOpen(false)}>Close</Button>
+      ) : null
+    }
+  >
+    {currentInternship.evaluation && !isEditing ? (
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Evaluation Details</h3>
+        <p><strong>Company Name:</strong> {currentInternship.evaluation.companyName}</p>
+        <p><strong>Rating:</strong> {currentInternship.evaluation.rating} stars</p>
+        <p><strong>Strengths:</strong> {currentInternship.evaluation.strengths}</p>
+        <p><strong>Areas for Improvement:</strong> {currentInternship.evaluation.areasForImprovement}</p>
+        <p><strong>Comments:</strong> {currentInternship.evaluation.comments}</p>
+        <p><strong>Recommended:</strong> {currentInternship.evaluation.recommended ? 'Yes' : 'No'}</p>
+        <p><strong>Date:</strong> {currentInternship.evaluation.date}</p>
+      </div>
+    ) : (
+<EvaluationForm
+  onSubmit={(evaluationData) => {
+    const updatedInternships = student.previousInternships.map(intern =>
+      intern.id === currentInternship.id ? {
+        ...intern,
+        evaluation: {
+          ...evaluationData,
+          date: new Date().toISOString().split('T')[0]
+        }
+      } : intern
+    );
+    setStudent({ ...student, previousInternships: updatedInternships });
+    setIsEvaluationModalOpen(false);
+    // Add these lines
+    const action = currentInternship.evaluation ? 'updated' : 'created';
+    toast.success(`Evaluation for ${currentInternship.companyName} has been ${action}`);
+  }}
+  initialData={currentInternship.evaluation || { companyName: currentInternship.companyName }}
+  evaluationType="company"
+  onDeleteEvaluation={() => {
+    handleDeleteEvaluation(currentInternship);
+    setIsEvaluationModalOpen(false);
+  }}
+/>
+    )}
+  </Modal>
+)}
     </div>
   );
 };
