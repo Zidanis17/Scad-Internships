@@ -7,7 +7,7 @@ const Navbar = () => {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const location = useLocation();
-  const { userRole } = useContext(AuthContext);
+  const { userRole, logout } = useContext(AuthContext);
   
   // Check if we're on the login page
   const isLoginPage = location.pathname === '/login' || location.pathname === '/' || location.pathname === '/register-company';
@@ -28,6 +28,9 @@ const Navbar = () => {
     }
   };
   
+  const handleSignOut = () => {
+    logout();
+  }
   // Define navigation links and organize them into groups when needed
   const getNavLinks = () => {
     // If we're on the login page, return empty array (no nav links)
@@ -276,7 +279,7 @@ const Navbar = () => {
                             <Link to="/student/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Your Profile
                             </Link>
-                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <Link to="/" onClick={handleSignOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Sign out
                             </Link>
                           </>
@@ -288,7 +291,7 @@ const Navbar = () => {
                             <Link to="/proStudent/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Your Profile
                             </Link>
-                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <Link to="/" onClick={handleSignOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Sign out
                             </Link>
                           </>
@@ -297,7 +300,7 @@ const Navbar = () => {
                       if (userRole === 'company') {
                         return (
                           <>
-                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <Link to="/" onClick={handleSignOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Sign out
                             </Link>
                           </>
@@ -309,7 +312,7 @@ const Navbar = () => {
                             <Link to="/scadOffice/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Your Profile
                             </Link>
-                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <Link to="/" onClick={handleSignOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Sign out
                             </Link>
                           </>
@@ -321,7 +324,7 @@ const Navbar = () => {
                             <Link to="/faculty/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Your Profile
                             </Link>
-                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <Link to="/" onClick={handleSignOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               Sign out
                             </Link>
                           </>
@@ -329,7 +332,7 @@ const Navbar = () => {
                       }
                     } else {
                       return (
-                        <Link to="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <Link to="/login"  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                           Login
                         </Link>
                       );

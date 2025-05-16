@@ -66,11 +66,13 @@ const NotFound = () => {
           Redirecting to your dashboard in <span className="font-bold">{countdown}</span> seconds...
         </p>
 
+        
         <div className="flex flex-col space-y-4">
+        {userRole &&(
           <Button onClick={handleRedirect} className="w-full bg-blue-600 text-white hover:bg-blue-700">
             Go to Dashboard Now
           </Button>
-          
+        )}
           <Link to="/" className="text-blue-600 hover:text-blue-500 font-medium">
             Return to Login Page
           </Link>
