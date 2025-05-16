@@ -996,7 +996,7 @@ const handleDeleteEvaluation = (internship) => {
                     {internship.isPaid && <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">{internship.salary}</span>}
                   </div>
                   <div className="mt-3">
-                    <Link to={`/${role}/internships/${internship.id}`}>
+                    <Link to={`/${role}/internships/`}>
                       <Button className="bg-blue-600 text-white hover:bg-blue-700 text-sm py-1">View Details</Button>
                     </Link>
                   </div>
