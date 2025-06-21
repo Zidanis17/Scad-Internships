@@ -15,8 +15,8 @@ const companySizes = [
 ];
 
 // Replace these with your EmailJS credentials
-const EMAILJS_USER_ID = 'xgaCI-VQn7vcGdf6t';
-const EMAILJS_SERVICE_ID = 'service_mg5s3up';
+const EMAILJS_USER_ID = 'exampleID'; //insert EmailJs User ID HERE
+const EMAILJS_SERVICE_ID = 'exampleService'; //insert EmailJs Service ID HERE
 const EMAILJS_TEMPLATE_ID = 'template_smfi2yr';
 
 const CompanyRegistration = () => {
@@ -100,7 +100,7 @@ const CompanyRegistration = () => {
     const templateParams = {
       name: "SCAD OFFICE",
       subject: "New Company registration",
-      email: "isozidan11@gmail.com",
+      email: "example@gmail.com",
       company_name: formData.name,
       industry: formData.industry,
       company_size: formData.size,
